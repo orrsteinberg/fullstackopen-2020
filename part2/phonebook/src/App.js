@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import NewPersonForm from "./NewPersonForm";
-import FilterInput from "./FilterInput";
-import Persons from "./Persons";
+import NewPersonForm from "./components/NewPersonForm";
+import FilterInput from "./components/FilterInput";
+import Persons from "./components/Persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -34,8 +34,9 @@ const App = () => {
     ]);
   };
 
-  const isMatchingFilter = (person) =>
-    person.name.toLowerCase().includes(filter.toLowerCase());
+  const personsToShow = persons.filter((person) =>
+    person.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <div>
@@ -44,7 +45,7 @@ const App = () => {
       <h2>Add new</h2>
       <NewPersonForm addNewPerson={addNewPerson} />
       <h2>Numbers</h2>
-      <Persons persons={persons} isMatchingFilter={isMatchingFilter} />
+      <Persons persons={personsToShow} />
     </div>
   );
 };
