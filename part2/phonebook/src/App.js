@@ -34,9 +34,12 @@ const App = () => {
     ]);
   };
 
-  const personsToShow = persons.filter((person) =>
-    person.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  const personsToShow =
+    filter === ""
+      ? persons
+      : persons.filter((person) =>
+          person.name.toLowerCase().includes(filter.toLowerCase())
+        );
 
   return (
     <div>
