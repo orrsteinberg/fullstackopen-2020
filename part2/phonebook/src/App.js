@@ -1,63 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const NewPersonForm = ({ addNewPerson }) => {
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (newName.trim() === "") return;
-    addNewPerson({ name: newName, number: newNumber });
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        name:{" "}
-        <input
-          value={newName}
-          onChange={({ target }) => setNewName(target.value)}
-        />
-      </div>
-      <div>
-        number:{" "}
-        <input
-          value={newNumber}
-          onChange={({ target }) => setNewNumber(target.value)}
-        />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
-    </form>
-  );
-};
-
-const FilterInput = ({ setFilter }) => (
-  <input onChange={({ target }) => setFilter(target.value)} />
-);
-
-const Persons = ({ persons, isMatchingFilter }) => (
-  <div>
-    {persons.map(
-      (person) =>
-        isMatchingFilter(person) && (
-          <div key={person.name}>
-            {person.name}: {person.number}
-          </div>
-        )
-    )}
-  </div>
-);
+import NewPersonForm from "./NewPersonForm";
+import FilterInput from "./FilterInput";
+import Persons from "./Persons";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-123456" },
-    { name: "Ada Lovelace", number: "39-44-5323523" },
-    { name: "Dan Abramov", number: "12-43-234345" },
-    { name: "Mary Poppendieck", number: "39-23-6423122" },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [filter, setFilter] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/persons")
+      .then((res) => {
+        const personsFromDb = res.data;
+        setPersons(personsFromDb);
+      })
+      .catch((error) => console.error(error));
+  }, []);
 
   const addNewPerson = (newPerson) => {
     const namesMatch = (person1, person2) =>
