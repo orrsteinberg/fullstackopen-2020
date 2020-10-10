@@ -67,7 +67,7 @@ describe('Blogs', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    expect(resultBlog.body.id).toEqual(blogToView.id)
+    expect(resultBlog.body.id).toBe(blogToView.id)
   })
 
   test('return 404 status code when the blog does not exist', async () => {
@@ -177,7 +177,7 @@ describe('Blogs', () => {
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
 
-    expect(response.body.likes).toEqual(0)
+    expect(response.body.likes).toBe(0)
   })
 })
 
