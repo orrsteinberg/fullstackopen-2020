@@ -77,11 +77,26 @@ describe('Creating a new user', () => {
     expect(usernames).toContain(newUser.username)
   })
 
-  test('fails without validation requirements', async () => {
+  test('fails with a username shorter than 3 characters', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
       username: 'j',
+      name: 'John Doe',
+      password: 'password',
+    }
+
+    await api.post('/api/users').send(newUser).expect(400)
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
+
+  test('fails with a password shorter than 3 characters', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'jdoe',
       name: 'John Doe',
       password: 'p',
     }

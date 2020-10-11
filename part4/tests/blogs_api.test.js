@@ -59,15 +59,20 @@ describe('Blogs', () => {
   })
 
   test('can be viewed individually', async () => {
-    const allBlogsinDb = await helper.blogsInDb()
-    const blogToView = allBlogsinDb[0]
+    const allBlogsInDb = await helper.blogsInDb()
+    const blogToView = allBlogsInDb[0]
 
-    const resultBlog = await api
+    const response = await api
       .get(`/api/blogs/${blogToView.id}`)
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    expect(resultBlog.body.id).toBe(blogToView.id)
+    expect(response.body.id).toBe(blogToView.id)
+  })
+
+  test('have a unique identifier named "id"', async () => {
+    const response = await api.get('/api/blogs')
+    expect(response.body[0].id).toBeDefined()
   })
 
   test('return 404 status code when the blog does not exist', async () => {
@@ -145,7 +150,7 @@ describe('Blogs', () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
   })
 
-  test('cannot be added with invalid data', async () => {
+  test('cannot be added without url property', async () => {
     const newBlog = {
       title: 'Invalid blog post',
     }
@@ -160,7 +165,21 @@ describe('Blogs', () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
   })
 
-  test('are assigned 0 likes if not specified otherwise', async () => {
+  test('cannot be added without title property', async () => {
+    const newBlog = {
+      url: 'http://www.invalidblogpost.api',
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `bearer ${token}`)
+      .expect(400)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+  test('are assigned 0 likes if "likes" property is missing from request', async () => {
     const newBlog = {
       title: 'Example blog title',
       author: 'John Doe',
