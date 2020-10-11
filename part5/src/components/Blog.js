@@ -8,7 +8,8 @@ const BlogDetails = ({ blog, addLike, user, deleteBlog }) => {
     <div className="blog-details">
       <p>{blog.url}</p>
       <p className="likes">
-        {blog.likes} likes<button onClick={addLike}>Add</button>
+        {blog.likes} {blog.likes === 1 ? 'like' : 'likes'}
+        <button onClick={addLike}>Add</button>
       </p>
       <p>{blog.user.name}</p>
       {isOwnedByUser && <DeleteButton deleteBlog={deleteBlog} />}
@@ -43,7 +44,7 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <span className="blog-title">
         <b>{blog.title}</b>
       </span>{' '}
