@@ -39,7 +39,12 @@ bloglistRouter.post('/', async (request, response) => {
     user.blogs = user.blogs.concat(savedBlog.id)
     await user.save()
 
-    response.status(201).json(savedBlog.toJSON())
+    // Populate user field on the returned blog
+    const populatedBlog = await savedBlog
+      .populate('user', { username: 1, name: 1 })
+      .execPopulate()
+
+    response.status(201).json(populatedBlog.toJSON())
   } catch (error) {
     response.status(400).end()
   }
