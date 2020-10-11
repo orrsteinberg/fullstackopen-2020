@@ -8,15 +8,15 @@
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-scripts": "3.3.1"
+    "react-scripts": "^3.4.3"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "eslint": "eslint .",
-    "eslint:fix": "eslint . --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "cypress:open": "cypress open",
     "test:e2e": "cypress run"
   },
@@ -40,7 +40,9 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "cypress": "^4.4.1",
-    "eslint-plugin-cypress": "^2.10.3",
-    "eslint-plugin-jest": "^23.8.2"
+    "eslint": "^7.11.0",
+    "eslint-plugin-cypress": "^2.11.2",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-react": "^7.21.4"
   }
 }
