@@ -10,7 +10,10 @@ bloglistRouter.get('/', async (request, response) => {
 
 bloglistRouter.get('/:id', async (request, response) => {
   try {
-    const resultBlog = await Blog.findById(request.params.id)
+    const resultBlog = await Blog.findById(request.params.id).populate('user', {
+      username: 1,
+      name: 1,
+    })
     response.json(resultBlog.toJSON())
   } catch (error) {
     response.status(404).end()
@@ -80,7 +83,13 @@ bloglistRouter.put('/:id', async (request, response) => {
     blogObject,
     { new: true }
   )
-  response.json(updatedBlog.toJSON())
+
+  // Populate user field on the returned blog
+  const populatedBlog = await updatedBlog
+    .populate('user', { username: 1, name: 1 })
+    .execPopulate()
+
+  response.json(populatedBlog.toJSON())
 })
 
 module.exports = bloglistRouter
