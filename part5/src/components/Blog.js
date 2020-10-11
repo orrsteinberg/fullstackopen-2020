@@ -44,7 +44,10 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
 
   return (
     <div style={blogStyle}>
-      <b>{blog.title}</b> {blog.author}{' '}
+      <span className="blog-title">
+        <b>{blog.title}</b>
+      </span>{' '}
+      <span className="blog-author">{blog.author}</span>{' '}
       <button onClick={() => setShowDetails(!showDetails)}>{showDetails ? 'hide' : 'view'}</button>
       {showDetails ? (
         <BlogDetails blog={blog} addLike={handleAddLike} user={user} deleteBlog={handleDelete} />
