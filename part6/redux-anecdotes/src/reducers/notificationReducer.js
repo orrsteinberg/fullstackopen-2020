@@ -1,11 +1,23 @@
-export const displayNotification = (message) => ({
-  type: "DISPLAY_NOTIFICATION",
-  data: message,
-});
+export const setNotification = (message, duration) => {
+  if (window.notificationTimeout) {
+    window.clearTimeout(window.notificationTimeout);
+  }
 
-export const clearNotification = (notification) => ({
-  type: "CLEAR_NOTIFICATION",
-});
+  return async (dispatch) => {
+    dispatch({
+      type: "DISPLAY_NOTIFICATION",
+      data: message,
+    });
+
+    window.notificationTimeout = setTimeout(
+      () =>
+        dispatch({
+          type: "CLEAR_NOTIFICATION",
+        }),
+      duration * 1000
+    );
+  };
+};
 
 const notificationReducer = (state = null, action) => {
   switch (action.type) {
