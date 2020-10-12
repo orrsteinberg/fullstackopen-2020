@@ -6,9 +6,9 @@ import Filter from "./Filter";
 const AnecdoteList = () => {
   const anecdotes = useSelector((state) => {
     // Filter
-    const filteredAnecdotes = state.anecdotes.filter((a) =>
-      a.content.toLowerCase().includes(state.filter.toLowerCase())
-    );
+    const filteredAnecdotes = state.anecdotes.filter((a) => {
+      return a.content.toLowerCase().includes(state.filter.toLowerCase());
+    });
     // Sort
     return filteredAnecdotes.sort((a, b) => b.votes - a.votes);
   });
