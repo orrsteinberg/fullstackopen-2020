@@ -69,7 +69,7 @@ describe('Blog app', function () {
           cy.get('.blog-details').should('contain', '1 like')
         })
 
-        it('it is possible to delete a blog', function () {
+        it('it is possible to delete a blog if it was created by the same user', function () {
           cy.get('.blog').contains('view').click()
           cy.get('.blog-details').contains('delete').click()
           cy.should('not.contain', 'Another blog from Cypress')
