@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import {
-  BrowserRouter as Router,
   Switch,
   Route,
   Link,
-  useParams,
+  Redirect,
   useHistory,
+  useRouteMatch,
 } from "react-router-dom";
+import { useField } from "./hooks";
 
 const Menu = () => {
   const padding = {
@@ -27,13 +28,14 @@ const Menu = () => {
   );
 };
 
-const AnecdoteList = ({ anecdotes }) => (
+const AnecdoteList = ({ anecdotes, vote }) => (
   <div>
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map((anecdote) => (
         <li key={anecdote.id}>
-          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>{" "}
+          <button onClick={() => vote(anecdote.id)}>vote</button>
         </li>
       ))}
     </ul>
@@ -78,19 +80,25 @@ const Footer = () => (
 
 const CreateNew = (props) => {
   const history = useHistory();
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
-  const [info, setInfo] = useState("");
+  const [content, resetContent] = useField("text");
+  const [author, resetAuthor] = useField("text");
+  const [info, resetInfo] = useField("text");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0,
     });
     history.push("/");
+  };
+
+  const resetFields = () => {
+    resetContent();
+    resetAuthor();
+    resetInfo();
   };
 
   return (
@@ -99,54 +107,39 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          <input {...content} />
         </div>
         <div>
           author
-          <input
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
+          <input {...author} />
         </div>
         <div>
           url for more info
-          <input
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-          />
+          <input {...info} />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
+        <button type="button" onClick={resetFields}>
+          reset
+        </button>
       </form>
     </div>
   );
 };
 
-const Anecdote = ({ anecdotes }) => {
-  const id = useParams().id;
-  const anecdote = anecdotes.find((a) => a.id === id);
-
-  return (
-    <div
-      style={{ marginBottom: 10, padding: 5, borderBottom: "1px solid #222" }}
-    >
-      <h2>
-        {anecdote.content} by {anecdote.author}
-      </h2>
-      <div>
-        has {anecdote.votes} {anecdote.votes === 1 ? "vote" : "votes"}
-      </div>
-      <div>
-        For more information, see: <a href={anecdote.info}>{anecdote.info}</a>
-      </div>
+const Anecdote = ({ anecdote, vote }) => (
+  <div style={{ marginBottom: 10, padding: 5, borderBottom: "1px solid #222" }}>
+    <h2>
+      {anecdote.content} by {anecdote.author}
+    </h2>
+    <div>
+      has {anecdote.votes} {anecdote.votes === 1 ? "vote" : "votes"}{" "}
+      <button onClick={() => vote(anecdote.id)}>vote</button>
     </div>
-  );
-};
+    <div>
+      For more information, see: <a href={anecdote.info}>{anecdote.info}</a>
+    </div>
+  </div>
+);
 
 const Notification = ({ notification }) => {
   if (notification === "") return null;
@@ -179,6 +172,12 @@ const App = () => {
   ]);
 
   const [notification, setNotification] = useState("");
+  const anecdoteIdMatch = useRouteMatch("/anecdotes/:id");
+  const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
+
+  const anecdote = anecdoteIdMatch
+    ? anecdoteById(anecdoteIdMatch.params.id)
+    : null;
 
   const notify = (message) => {
     setNotification(message);
@@ -191,8 +190,6 @@ const App = () => {
     notify(`New anecdote created: ${anecdote.content}`);
   };
 
-  const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
-
   const vote = (id) => {
     const anecdote = anecdoteById(id);
 
@@ -202,16 +199,21 @@ const App = () => {
     };
 
     setAnecdotes(anecdotes.map((a) => (a.id === id ? voted : a)));
+    notify(`New vote added for ${anecdote.content}`);
   };
 
   return (
-    <Router>
+    <div>
       <h1>Software anecdotes</h1>
       <Notification notification={notification} />
       <Menu />
       <Switch>
         <Route path="/anecdotes/:id">
-          <Anecdote anecdotes={anecdotes} />
+          {anecdote ? (
+            <Anecdote anecdote={anecdote} vote={vote} />
+          ) : (
+            <Redirect to={"/"} />
+          )}
         </Route>
         <Route path="/about">
           <About />
@@ -220,11 +222,11 @@ const App = () => {
           <CreateNew addNew={addNew} />
         </Route>
         <Route path="/">
-          <AnecdoteList anecdotes={anecdotes} />
+          <AnecdoteList anecdotes={anecdotes} vote={vote} />
         </Route>
       </Switch>
       <Footer />
-    </Router>
+    </div>
   );
 };
 
