@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { updateBlog, deleteBlog } from '../reducers/blogReducer'
 import PropTypes from 'prop-types'
 
-const BlogDetails = ({ blog, addLike, user, deleteBlog }) => {
+const BlogDetails = ({ blog, user, handleAddLike, handleDelete }) => {
   const isOwnedByUser = user.username === blog.user.username
 
   return (
@@ -9,49 +11,42 @@ const BlogDetails = ({ blog, addLike, user, deleteBlog }) => {
       <p>{blog.url}</p>
       <p className="likes">
         {blog.likes} {blog.likes === 1 ? 'like' : 'likes'}
-        <button onClick={addLike}>Add</button>
+        <button onClick={handleAddLike}>Add</button>
       </p>
       <p>{blog.user.name}</p>
-      {isOwnedByUser && <DeleteButton deleteBlog={deleteBlog} />}
+      {isOwnedByUser && <button onClick={handleDelete}>delete</button>}
     </div>
   )
 }
 
-const DeleteButton = ({ deleteBlog }) => <button onClick={deleteBlog}>delete</button>
-
-const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
-  const blogStyle = {
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginTop: 2,
-    marginBottom: 2,
-  }
-
+const Blog = ({ blog, user }) => {
   const [showDetails, setShowDetails] = useState(false)
+  const dispatch = useDispatch()
 
   const handleDelete = () => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      deleteBlog(blog.id)
+      dispatch(deleteBlog(blog.id))
     }
   }
 
   const handleAddLike = () => {
-    const updatedBlog = { ...blog, likes: blog.likes + 1 }
-    updateBlog(blog.id, updatedBlog)
+    dispatch(updateBlog({ ...blog, likes: blog.likes + 1 }))
   }
 
   return (
-    <div className="blog" style={blogStyle}>
+    <div className="blog">
       <span className="blog-title">
         <b>{blog.title}</b>
       </span>{' '}
       <span className="blog-author">{blog.author}</span>{' '}
       <button onClick={() => setShowDetails(!showDetails)}>{showDetails ? 'hide' : 'view'}</button>
       {showDetails ? (
-        <BlogDetails blog={blog} addLike={handleAddLike} user={user} deleteBlog={handleDelete} />
+        <BlogDetails
+          blog={blog}
+          user={user}
+          handleAddLike={handleAddLike}
+          handleDelete={handleDelete}
+        />
       ) : null}
     </div>
   )
@@ -60,19 +55,13 @@ const Blog = ({ blog, user, updateBlog, deleteBlog }) => {
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  updateBlog: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
 }
 
 BlogDetails.propTypes = {
   blog: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  addLike: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
-}
-
-DeleteButton.propTypes = {
-  deleteBlog: PropTypes.func.isRequired,
+  handleAddLike: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
 }
 
 export default Blog
