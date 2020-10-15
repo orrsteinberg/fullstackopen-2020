@@ -1,9 +1,15 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Switch, Route } from 'react-router-dom'
+
 import { setCurrentUser, clearCurrentUser } from './reducers/currentUserReducer'
+
 import blogService from './services/blogs'
 import Header from './components/Header'
-import Bloglist from './components/Bloglist'
+import Blogs from './components/Blogs'
+import Blog from './components/Blog'
+import Users from './components/Users'
+import User from './components/User'
 import LoginForm from './components/LoginForm'
 
 const App = () => {
@@ -38,10 +44,22 @@ const App = () => {
 
   return (
     <div>
-      <Header title="Blogs" />
       <p>{currentUser.name} logged in</p>
       <button onClick={handleLogout}>Log out</button>
-      <Bloglist />
+      <Switch>
+        <Route path="/blogs/:id">
+          <Blog />
+        </Route>
+        <Route path="/users/:id">
+          <User />
+        </Route>
+        <Route path="/users">
+          <Users />
+        </Route>
+        <Route path="/">
+          <Blogs />
+        </Route>
+      </Switch>
     </div>
   )
 }

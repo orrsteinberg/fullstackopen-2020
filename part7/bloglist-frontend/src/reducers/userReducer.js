@@ -4,7 +4,7 @@ import { setNotification } from './notificationReducer'
 export const initializeUsers = () => {
   return async (dispatch) => {
     try {
-      const users = userService.getAll()
+      const users = await userService.getAll()
       dispatch({ type: 'INIT_USERS', data: users })
     } catch (error) {
       setNotification('Error fetching list of users', 'error')

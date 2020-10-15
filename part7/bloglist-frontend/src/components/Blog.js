@@ -1,67 +1,47 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { updateBlog, deleteBlog } from '../reducers/blogReducer'
-import PropTypes from 'prop-types'
+import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { Redirect, useRouteMatch } from 'react-router-dom'
+import { deleteBlog, updateBlog } from '../reducers/blogReducer'
 
-const BlogDetails = ({ blog, user, handleAddLike, handleDelete }) => {
-  const isOwnedByUser = user.username === blog.user.username
-
-  return (
-    <div className="blog-details">
-      <p>{blog.url}</p>
-      <p className="likes">
-        {blog.likes} {blog.likes === 1 ? 'like' : 'likes'}
-        <button onClick={handleAddLike}>Add</button>
-      </p>
-      <p>{blog.user.name}</p>
-      {isOwnedByUser && <button onClick={handleDelete}>delete</button>}
-    </div>
-  )
-}
-
-const Blog = ({ blog, user }) => {
-  const [showDetails, setShowDetails] = useState(false)
+const Blog = () => {
+  const blogIdMatch = useRouteMatch('/blogs/:id').params.id
+  const blogToView = useSelector((state) => state.blogs.find((b) => b.id === blogIdMatch))
+  const currentUser = useSelector((state) => state.currentUser)
   const dispatch = useDispatch()
 
   const handleDelete = () => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      dispatch(deleteBlog(blog.id))
+    if (window.confirm(`Remove blog ${blogToView.title} by ${blogToView.author}?`)) {
+      dispatch(deleteBlog(blogToView.id))
     }
   }
 
   const handleAddLike = () => {
-    dispatch(updateBlog({ ...blog, likes: blog.likes + 1 }))
+    dispatch(updateBlog({ ...blogToView, likes: blogToView.likes + 1 }))
   }
 
+  if (!blogToView) {
+    return <Redirect to="/blogs" />
+  }
+
+  const shouldDispayDelete = blogToView.user.username === currentUser.username
+
   return (
-    <div className="blog">
-      <span className="blog-title">
-        <b>{blog.title}</b>
-      </span>{' '}
-      <span className="blog-author">{blog.author}</span>{' '}
-      <button onClick={() => setShowDetails(!showDetails)}>{showDetails ? 'hide' : 'view'}</button>
-      {showDetails ? (
-        <BlogDetails
-          blog={blog}
-          user={user}
-          handleAddLike={handleAddLike}
-          handleDelete={handleDelete}
-        />
-      ) : null}
+    <div>
+      <div>
+        <h1>
+          {blogToView.title} by {blogToView.author}
+        </h1>
+        <p>{blogToView.url}</p>
+        <p className="likes">
+          {blogToView.likes} likes
+          <button onClick={handleAddLike}>Add</button>
+        </p>
+        <p>Added by: {blogToView.user.name}</p>
+        {shouldDispayDelete && <button onClick={handleDelete}>delete</button>}
+      </div>
+      <h2>Comments:</h2>
     </div>
   )
-}
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
-}
-
-BlogDetails.propTypes = {
-  blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
-  handleAddLike: PropTypes.func.isRequired,
-  handleDelete: PropTypes.func.isRequired,
 }
 
 export default Blog

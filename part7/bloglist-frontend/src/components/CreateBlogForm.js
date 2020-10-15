@@ -1,33 +1,25 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
 import { useField } from '../hooks'
-import { createBlog } from '../reducers/blogReducer'
+import PropTypes from 'prop-types'
 
-const CreateBlogForm = () => {
-  const [title, clearTitle] = useField('text')
-  const [author, clearAuthor] = useField('text')
-  const [url, clearUrl] = useField('text')
-  const dispatch = useDispatch()
+const CreateBlogForm = ({ createBlog }) => {
+  const [title] = useField('text')
+  const [author] = useField('text')
+  const [url] = useField('text')
 
-  const handleCreateBlog = (event) => {
+  const handleSbmit = (event) => {
     event.preventDefault()
-    dispatch(
-      createBlog({
-        title: title.value,
-        author: author.value,
-        url: url.value,
-      })
-    )
-
-    clearTitle()
-    clearAuthor()
-    clearUrl()
+    createBlog({
+      title: title.value,
+      author: author.value,
+      url: url.value,
+    })
   }
 
   return (
     <div>
       <h2>Create new</h2>
-      <form id="create-blog-form" onSubmit={handleCreateBlog}>
+      <form id="create-blog-form" onSubmit={handleSbmit}>
         <div>
           Title: <input {...title} />
         </div>
@@ -41,6 +33,10 @@ const CreateBlogForm = () => {
       </form>
     </div>
   )
+}
+
+CreateBlogForm.propTypes = {
+  createBlog: PropTypes.func.isRequired,
 }
 
 export default CreateBlogForm
