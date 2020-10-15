@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Redirect, useRouteMatch } from 'react-router-dom'
+import { Link, Redirect, useRouteMatch } from 'react-router-dom'
 import { deleteBlog, updateBlog } from '../reducers/blogReducer'
 
 const Blog = () => {
@@ -20,7 +20,7 @@ const Blog = () => {
   }
 
   if (!blogToView) {
-    return <Redirect to="/blogs" />
+    return <Redirect to="/" />
   }
 
   const shouldDispayDelete = blogToView.user.username === currentUser.username
@@ -36,7 +36,9 @@ const Blog = () => {
           {blogToView.likes} likes
           <button onClick={handleAddLike}>Add</button>
         </p>
-        <p>Added by: {blogToView.user.name}</p>
+        <p>
+          Added by: <Link to={`/users/${blogToView.user.id}`}>{blogToView.user.name}</Link>
+        </p>
         {shouldDispayDelete && <button onClick={handleDelete}>delete</button>}
       </div>
       <h2>Comments:</h2>

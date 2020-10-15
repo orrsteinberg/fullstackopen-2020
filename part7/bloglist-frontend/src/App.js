@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route, Link } from 'react-router-dom'
 
 import { setCurrentUser, clearCurrentUser } from './reducers/currentUserReducer'
+import { initializeBlogs } from './reducers/blogReducer'
+import { initializeUsers } from './reducers/userReducer'
 
 import blogService from './services/blogs'
 import Header from './components/Header'
@@ -25,7 +27,15 @@ const App = () => {
       blogService.setToken(user.token)
       dispatch(setCurrentUser(user))
     }
+
+    // Initialize blogs and users
+    dispatch(initializeBlogs())
+    dispatch(initializeUsers())
   }, [dispatch])
+
+  //useEffect(() => {
+  //  dispatch(initializeBlogs())
+  //}, [dispatch])
 
   const handleLogout = () => {
     blogService.clearToken()
@@ -44,8 +54,21 @@ const App = () => {
 
   return (
     <div>
-      <p>{currentUser.name} logged in</p>
-      <button onClick={handleLogout}>Log out</button>
+      <header>
+        <h2>Bloglist App</h2>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/blogs">Blogs</Link>
+            </li>
+            <li>
+              <Link to="/users">Users</Link>
+            </li>
+          </ul>
+        </nav>
+        <p>{currentUser.name} logged in</p>
+        <button onClick={handleLogout}>Log out</button>
+      </header>
       <Switch>
         <Route path="/blogs/:id">
           <Blog />

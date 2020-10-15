@@ -1,21 +1,18 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { initializeBlogs, createBlog } from '../reducers/blogReducer'
+import { createBlog } from '../reducers/blogReducer'
 
 import Header from './Header'
 import Togglable from './Togglable'
 import CreateBlogForm from './CreateBlogForm'
 
-const Bloglist = () => {
+const Blogs = () => {
   const blogs = useSelector((state) => state.blogs.sort((a, b) => b.likes - a.likes))
   const dispatch = useDispatch()
+  // Ref toggleable component to access its toggle function on new blog creation
   const blogFormRef = React.useRef()
-
-  useEffect(() => {
-    dispatch(initializeBlogs())
-  }, [dispatch])
 
   const handleCreateBlog = ({ title, author, url }) => {
     dispatch(createBlog({ title, author, url }))
@@ -41,4 +38,4 @@ const Bloglist = () => {
   )
 }
 
-export default Bloglist
+export default Blogs
