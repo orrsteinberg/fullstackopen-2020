@@ -27,15 +27,15 @@ const App = () => {
       blogService.setToken(user.token)
       dispatch(setCurrentUser(user))
     }
-
-    // Initialize blogs and users
-    dispatch(initializeBlogs())
-    dispatch(initializeUsers())
   }, [dispatch])
 
-  //useEffect(() => {
-  //  dispatch(initializeBlogs())
-  //}, [dispatch])
+  useEffect(() => {
+    // Initialize blogs and users if user is logged in
+    if (currentUser) {
+      dispatch(initializeBlogs())
+      dispatch(initializeUsers())
+    }
+  }, [dispatch, currentUser])
 
   const handleLogout = () => {
     blogService.clearToken()
