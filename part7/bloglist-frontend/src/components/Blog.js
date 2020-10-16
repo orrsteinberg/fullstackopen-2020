@@ -1,47 +1,77 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link, Redirect, useRouteMatch } from 'react-router-dom'
-import { deleteBlog, updateBlog } from '../reducers/blogReducer'
+import { useField } from '../hooks'
+import { deleteBlog, addLike, addComment } from '../reducers/blogReducer'
+
+const CommentForm = ({ handleAddComment }) => {
+  const [comment, clearComment] = useField('text')
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    handleAddComment(comment.value)
+    clearComment()
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input {...comment} />
+      <button type="submit">Add Comment</button>
+    </form>
+  )
+}
+
+const Comments = ({ blog, handleAddComment }) => (
+  <div>
+    <h2>Comments:</h2>
+    <CommentForm handleAddComment={handleAddComment} />
+    <ul>{blog.comments && blog.comments.map((comment, idx) => <li key={idx}>{comment}</li>)}</ul>
+  </div>
+)
 
 const Blog = () => {
   const blogIdMatch = useRouteMatch('/blogs/:id').params.id
-  const blogToView = useSelector((state) => state.blogs.find((b) => b.id === blogIdMatch))
+  const blog = useSelector((state) => state.blogs.find((b) => b.id === blogIdMatch))
   const currentUser = useSelector((state) => state.currentUser)
   const dispatch = useDispatch()
 
   const handleDelete = () => {
-    if (window.confirm(`Remove blog ${blogToView.title} by ${blogToView.author}?`)) {
-      dispatch(deleteBlog(blogToView.id))
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      dispatch(deleteBlog(blog.id))
     }
   }
 
   const handleAddLike = () => {
-    dispatch(updateBlog({ ...blogToView, likes: blogToView.likes + 1 }))
+    dispatch(addLike({ ...blog, likes: blog.likes + 1 }))
   }
 
-  if (!blogToView) {
+  const handleAddComment = (comment) => {
+    dispatch(addComment({ ...blog, comments: [...blog.comments, comment] }))
+  }
+
+  if (!blog) {
     return <Redirect to="/" />
   }
 
-  const shouldDispayDelete = blogToView.user.username === currentUser.username
+  const shouldDispayDelete = blog.user.username === currentUser.username
 
   return (
     <div>
       <div>
         <h1>
-          {blogToView.title} by {blogToView.author}
+          {blog.title} by {blog.author}
         </h1>
-        <p>{blogToView.url}</p>
+        <p>{blog.url}</p>
         <p className="likes">
-          {blogToView.likes} likes
+          {blog.likes} likes
           <button onClick={handleAddLike}>Add</button>
         </p>
         <p>
-          Added by: <Link to={`/users/${blogToView.user.id}`}>{blogToView.user.name}</Link>
+          Added by: <Link to={`/users/${blog.user.id}`}>{blog.user.name}</Link>
         </p>
         {shouldDispayDelete && <button onClick={handleDelete}>delete</button>}
       </div>
-      <h2>Comments:</h2>
+      <Comments blog={blog} handleAddComment={handleAddComment} />
     </div>
   )
 }

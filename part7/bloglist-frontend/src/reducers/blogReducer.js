@@ -26,14 +26,26 @@ export const createBlog = (blogObject) => {
   }
 }
 
-export const updateBlog = (blogObject) => {
+export const addLike = (blogObject) => {
   return async (dispatch) => {
     try {
       const updatedBlog = await blogService.update(blogObject)
-      dispatch({ type: 'ADD_LIKE', data: updatedBlog })
+      dispatch({ type: 'UPDATE_BLOG', data: updatedBlog })
       dispatch(setNotification(`Like added: ${updatedBlog.title}`, 'success'))
     } catch (error) {
       dispatch(setNotification(`Error adding like to blog ${blogObject.title}`, 'error'))
+    }
+  }
+}
+
+export const addComment = (blogObject) => {
+  return async (dispatch) => {
+    try {
+      const updatedBlog = await blogService.comment(blogObject)
+      dispatch({ type: 'UPDATE_BLOG', data: updatedBlog })
+      dispatch(setNotification(`New comment added for ${updatedBlog.title}`, 'success'))
+    } catch (error) {
+      dispatch(setNotification(`Error commenting on blog ${blogObject.title}`, 'error'))
     }
   }
 }
@@ -56,7 +68,7 @@ const blogReducer = (state = [], action) => {
     return action.data
   case 'CREATE_BLOG':
     return [...state, action.data]
-  case 'ADD_LIKE':
+  case 'UPDATE_BLOG':
     return state.map((b) => (b.id === action.data.id ? action.data : b))
   case 'DELETE_BLOG':
     return state.filter((b) => b.id !== action.data.id)
