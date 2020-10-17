@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 
 import { setCurrentUser, clearCurrentUser } from './reducers/currentUserReducer'
 import { initializeBlogs } from './reducers/blogReducer'
 import { initializeUsers } from './reducers/userReducer'
 
 import blogService from './services/blogs'
-import Header from './components/Header'
+
+import Notification from './components/Notification'
+import MainHeader from './components/MainHeader'
 import Blogs from './components/Blogs'
 import Blog from './components/Blog'
 import Users from './components/Users'
@@ -44,31 +46,13 @@ const App = () => {
   }
 
   if (!currentUser) {
-    return (
-      <div>
-        <Header title="Log in" />
-        <LoginForm />
-      </div>
-    )
+    return <LoginForm />
   }
 
   return (
-    <div>
-      <header>
-        <h2>Bloglist App</h2>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/blogs">Blogs</Link>
-            </li>
-            <li>
-              <Link to="/users">Users</Link>
-            </li>
-          </ul>
-        </nav>
-        <p>{currentUser.name} logged in</p>
-        <button onClick={handleLogout}>Log out</button>
-      </header>
+    <>
+      <MainHeader currentUser={currentUser} handleLogout={handleLogout} />
+      <Notification />
       <Switch>
         <Route path="/blogs/:id">
           <Blog />
@@ -83,7 +67,7 @@ const App = () => {
           <Blogs />
         </Route>
       </Switch>
-    </div>
+    </>
   )
 }
 

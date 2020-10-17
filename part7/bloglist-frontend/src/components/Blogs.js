@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { createBlog } from '../reducers/blogReducer'
 
-import Header from './Header'
+import { Container, PageHeader, PageTitle, List, ListItem } from '../globalStyles'
 import Togglable from './Togglable'
 import CreateBlogForm from './CreateBlogForm'
 
@@ -20,21 +20,23 @@ const Blogs = () => {
   }
 
   return (
-    <div>
-      <Header title="Blogs" />
+    <Container whiteBg>
+      <PageHeader whiteBg>
+        <PageTitle>Blogs</PageTitle>
+      </PageHeader>
       <Togglable buttonLabel="New blog" ref={blogFormRef}>
         <CreateBlogForm createBlog={handleCreateBlog} />
       </Togglable>
-      <ul>
+      <List>
         {blogs.map((blog) => (
-          <li key={blog.id}>
+          <ListItem key={blog.id}>
             <Link to={`/blogs/${blog.id}/`}>
               <b>{blog.title}</b> by {blog.author}
             </Link>
-          </li>
+          </ListItem>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Container>
   )
 }
 

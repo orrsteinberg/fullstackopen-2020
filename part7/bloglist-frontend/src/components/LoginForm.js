@@ -2,6 +2,8 @@ import React from 'react'
 import { useDispatch } from 'react-redux'
 import { useField } from '../hooks'
 import { loginUser } from '../reducers/currentUserReducer'
+import { Container, PageHeader, PageTitle, Card, Button, Input } from '../globalStyles'
+import Notification from './Notification'
 
 const LoginForm = () => {
   const [username] = useField('text')
@@ -14,17 +16,25 @@ const LoginForm = () => {
   }
 
   return (
-    <div>
-      <form onSubmit={handleLogin}>
-        <div>
-          Username: <input {...username} />
-        </div>
-        <div>
-          Password: <input {...password} />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <Container>
+      <PageHeader>
+        <PageTitle>Log In</PageTitle>
+      </PageHeader>
+        <Notification />
+      <Card>
+        <form onSubmit={handleLogin}>
+          <div>
+            Username: <Input {...username} />
+          </div>
+          <div>
+            Password: <Input {...password} />
+          </div>
+          <Button primary type="submit">
+            Login
+          </Button>
+        </form>
+      </Card>
+    </Container>
   )
 }
 

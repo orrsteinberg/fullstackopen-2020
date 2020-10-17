@@ -1,6 +1,7 @@
 import React from 'react'
 import { useField } from '../hooks'
 import PropTypes from 'prop-types'
+import { Button, Input } from '../globalStyles'
 
 const CreateBlogForm = ({ createBlog }) => {
   const [title] = useField('text')
@@ -17,21 +18,23 @@ const CreateBlogForm = ({ createBlog }) => {
   }
 
   return (
-    <div>
+    <>
       <h2>Create new</h2>
       <form id="create-blog-form" onSubmit={handleSbmit}>
         <div>
-          Title: <input {...title} />
+          Title: <Input {...title} />
         </div>
         <div>
-          Author: <input {...author} />
+          Author: <Input {...author} />
         </div>
         <div>
-          URL: <input {...url} />
+          URL: <Input {...url} />
         </div>
-        <button type="submit">Create</button>
+        <Button primary type="submit">
+          Create
+        </Button>
       </form>
-    </div>
+    </>
   )
 }
 

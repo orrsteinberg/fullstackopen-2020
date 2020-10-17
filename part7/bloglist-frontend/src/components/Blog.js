@@ -1,32 +1,53 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link, Redirect, useRouteMatch } from 'react-router-dom'
 import { useField } from '../hooks'
+import { Container, Section, SectionTitle, Button, Input } from '../globalStyles'
 import { deleteBlog, addLike, addComment } from '../reducers/blogReducer'
+
+const StyledComment = styled.li`
+  padding: 0.5rem 1rem;
+  list-style-type: square;
+  border-bottom: solid 3px #fafafa;
+`
+
+const StyledCommentList = styled.ul`
+  margin: 1rem;
+  padding: 1rem;
+`
 
 const CommentForm = ({ handleAddComment }) => {
   const [comment, clearComment] = useField('text')
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    if (!comment.value || comment.value.trim() === '') return
+
     handleAddComment(comment.value)
     clearComment()
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <input {...comment} />
-      <button type="submit">Add Comment</button>
+      <Input {...comment} />
+      <Button primary type="submit">
+        Add Comment
+      </Button>
     </form>
   )
 }
 
 const Comments = ({ blog, handleAddComment }) => (
-  <div>
-    <h2>Comments:</h2>
+  <>
+    <h3>Comments:</h3>
     <CommentForm handleAddComment={handleAddComment} />
-    <ul>{blog.comments && blog.comments.map((comment, idx) => <li key={idx}>{comment}</li>)}</ul>
-  </div>
+    <StyledCommentList>
+      {blog.comments &&
+        blog.comments.map((comment, idx) => <StyledComment key={idx}>{comment}</StyledComment>)}
+    </StyledCommentList>
+  </>
 )
 
 const Blog = () => {
@@ -56,24 +77,37 @@ const Blog = () => {
   const shouldDispayDelete = blog.user.username === currentUser.username
 
   return (
-    <div>
-      <div>
-        <h1>
+    <Container whiteBg>
+      <Section>
+        <SectionTitle>
           {blog.title} by {blog.author}
-        </h1>
-        <p>{blog.url}</p>
+        </SectionTitle>
+        <a href={blog.url} target="_blank" rel="noopener noreferrer">
+          {blog.url}
+        </a>
         <p className="likes">
           {blog.likes} likes
-          <button onClick={handleAddLike}>Add</button>
+          <Button primary onClick={handleAddLike}>
+            Add
+          </Button>
         </p>
         <p>
           Added by: <Link to={`/users/${blog.user.id}`}>{blog.user.name}</Link>
         </p>
-        {shouldDispayDelete && <button onClick={handleDelete}>delete</button>}
-      </div>
+        {shouldDispayDelete && <Button onClick={handleDelete}>delete</Button>}
+      </Section>
       <Comments blog={blog} handleAddComment={handleAddComment} />
-    </div>
+    </Container>
   )
+}
+
+Comments.propTypes = {
+  blog: PropTypes.object.isRequired,
+  handleAddComment: PropTypes.func.isRequired,
+}
+
+CommentForm.propTypes = {
+  handleAddComment: PropTypes.func.isRequired,
 }
 
 export default Blog

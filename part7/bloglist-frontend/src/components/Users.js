@@ -1,15 +1,17 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import Header from './Header'
+import { Container, PageHeader, PageTitle, TableCentered } from '../globalStyles'
 
 const Users = () => {
   const users = useSelector((state) => state.users)
 
   return (
-    <div>
-      <Header title="Users" />
-      <table>
+    <Container whiteBg>
+      <PageHeader whiteBg>
+        <PageTitle>Users</PageTitle>
+      </PageHeader>
+      <TableCentered>
         <thead>
           <tr>
             <th></th>
@@ -26,8 +28,8 @@ const Users = () => {
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+      </TableCentered>
+    </Container>
   )
 }
 
