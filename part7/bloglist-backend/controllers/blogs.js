@@ -82,14 +82,27 @@ bloglistRouter.put('/:id', async (request, response) => {
     request.params.id,
     blogObject,
     { new: true }
-  )
+  ).populate('user', { username: 1, name: 1 })
 
-  // Populate user field on the returned blog
-  const populatedBlog = await updatedBlog
-    .populate('user', { username: 1, name: 1 })
-    .execPopulate()
+  response.json(updatedBlog.toJSON())
+})
 
-  response.json(populatedBlog.toJSON())
+bloglistRouter.post('/:id/comments', async (request, response) => {
+  if (!request.token || !request.decodedToken) {
+    return response.status(401).json({ error: 'missing or invalid token' })
+  }
+
+  const blogObject = {
+    comments: request.body.comments,
+  }
+
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    blogObject,
+    { new: true }
+  ).populate('user', { username: 1, name: 1 })
+
+  response.json(updatedBlog.toJSON())
 })
 
 module.exports = bloglistRouter
