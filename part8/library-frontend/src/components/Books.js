@@ -1,51 +1,69 @@
-import React, { useState } from "react";
-import { useQuery } from "@apollo/client";
+import React, { useState, useEffect } from "react";
+import { useLazyQuery } from "@apollo/client";
 import { ALL_BOOKS } from "../queries";
 import Select from "react-select";
 
 const Books = (props) => {
-  const [filterByGenre, setFilterByGenre] = useState("all");
-  const result = useQuery(ALL_BOOKS);
+  const [books, setBooks] = useState([]);
+  const [genreList, setGenreList] = useState([]);
+  const [genre, setGenre] = useState("all");
+  const [getBooks, { loading, error, data }] = useLazyQuery(ALL_BOOKS);
 
-  if (!props.show) {
-    return null;
+  useEffect(() => {
+    if (genre === "all") {
+      getBooks();
+    } else {
+      getBooks({ variables: { genre } });
+    }
+  }, [getBooks, genre]);
+
+  useEffect(() => {
+    if (data) {
+      setBooks(data.allBooks);
+    }
+  }, [setBooks, data]);
+
+  // Return appropriate render
+  if (!props.show) return null;
+
+  if (loading) return <div>Loading...</div>;
+
+  if (error) {
+    console.error(error);
+    return <div>Oops! Something went wrong</div>;
   }
 
-  if (result.loading) {
-    return <div>Loading...</div>;
-  }
-
-  const books = result.data.allBooks;
-
-  // Generate list of genres without duplicates, beginning with 'all'
-  const uniqueListOfGenres = ["all"].concat(
-    Array.from(
-      new Set(
-        books.reduce((arr, book) => {
-          return arr.concat(book.genres);
-        }, [])
+  // If there is no genre list yet (meaning it's the first render with all books), create it
+  if (books && genreList.length === 0) {
+    // Generate list of genres without duplicates, beginning with 'all'
+    const uniqueListOfGenres = ["all"].concat(
+      Array.from(
+        new Set(
+          books.reduce((arr, book) => {
+            return arr.concat(book.genres);
+          }, [])
+        )
       )
-    )
-  );
-  // Create an array of genre object for the select filter component
-  const genreOptions = uniqueListOfGenres.map((g) => ({ value: g, label: g }));
+    );
+    // Create an array of genre object for the select filter component
+    const genreOptions = uniqueListOfGenres.map((g) => ({
+      value: g,
+      label: g,
+    }));
 
-  // Apply filter
-  const booksToShow =
-    filterByGenre === "all"
-      ? books
-      : books.filter((book) => book.genres.includes(filterByGenre));
+    setGenreList(genreOptions);
+  }
 
   return (
     <div>
-      <h2>books</h2>
+      <h2>Books</h2>
 
       <h4>filter by genre:</h4>
       <Select
-        value={filterByGenre}
-        options={genreOptions}
+        value={genre}
+        options={genreList}
         onChange={(selectedOption) => {
-          setFilterByGenre(selectedOption.value);
+          setGenre(selectedOption.value);
         }}
       />
 
@@ -53,10 +71,10 @@ const Books = (props) => {
         <tbody>
           <tr>
             <th></th>
-            <th>author</th>
-            <th>published</th>
+            <th>Author</th>
+            <th>Published</th>
           </tr>
-          {booksToShow.map((a) => (
+          {books.map((a) => (
             <tr key={a.id}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>

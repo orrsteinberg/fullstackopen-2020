@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { CREATE_BOOK, ALL_BOOKS, ALL_AUTHORS } from "../queries";
+import { CREATE_BOOK, ALL_AUTHORS } from "../queries";
 
-const NewBook = (props) => {
+const NewBook = ({ show, setError, updateCacheWith }) => {
   const [title, setTitle] = useState("");
   const [author, setAuhtor] = useState("");
   const [published, setPublished] = useState("");
@@ -10,13 +10,13 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([]);
 
   const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
-    onError: (error) => props.setError(error.graphQLErrors[0].message),
+    onError: (error) => setError(error.graphQLErrors[0].message),
+    refetchQueries: [{ query: ALL_AUTHORS }],
+    // Manually update books in cache
+    update: (store, response) => {
+      updateCacheWith(response.data.addBook);
+    },
   });
-
-  if (!props.show) {
-    return null;
-  }
 
   const submit = (event) => {
     event.preventDefault();
@@ -24,7 +24,7 @@ const NewBook = (props) => {
     const publishedInt = parseInt(published);
 
     if (isNaN(publishedInt)) {
-      props.setError("Invalid publication year");
+      setError("Invalid publication year");
       return;
     }
 
@@ -48,6 +48,10 @@ const NewBook = (props) => {
     setGenres(genres.concat(genre));
     setGenre("");
   };
+
+  if (!show) {
+    return null;
+  }
 
   return (
     <div>

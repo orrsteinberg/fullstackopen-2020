@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useSubscription } from "@apollo/client";
+import { ALL_BOOKS, BOOK_ADDED } from "./queries";
 
 import Notification from "./components/Notification";
 import Authors from "./components/Authors";
@@ -39,6 +40,30 @@ const App = () => {
     client.resetStore();
     setPage("login");
   };
+
+  // Listen for new books and update cache when subscription data arrives
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) =>
+      set.map((b) => b.id).includes(object.id);
+
+    const dataInStore = client.readQuery({ query: ALL_BOOKS });
+
+    // Check that added book is not included in the current store
+    if (!includedIn(dataInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks: dataInStore.allBooks.concat(addedBook) },
+      });
+    }
+  };
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const addedBook = subscriptionData.data.bookAdded;
+      notify(`${addedBook.title} added`);
+      updateCacheWith(addedBook);
+    },
+  });
 
   return (
     <div>

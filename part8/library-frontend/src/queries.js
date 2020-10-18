@@ -1,30 +1,58 @@
 import { gql } from "@apollo/client";
 
+// Fragments
+const BOOK_DETAILS = gql`
+  fragment BookDetails on Book {
+    title
+    published
+    author {
+      name
+    }
+    genres
+    id
+  }
+`;
+
+const AUTHOR_DETAILS = gql`
+  fragment AuthorDetails on Author {
+    name
+    born
+    bookCount
+    id
+  }
+`;
+
+// Queries
 export const ALL_AUTHORS = gql`
   query {
     allAuthors {
-      name
-      born
-      bookCount
-      id
+      ...AuthorDetails
     }
   }
+
+  ${AUTHOR_DETAILS}
 `;
 
 export const ALL_BOOKS = gql`
   query getAllBooks($author: String, $genre: String) {
     allBooks(author: $author, genre: $genre) {
-      title
-      published
-      author {
-        name
-      }
-      genres
-      id
+      ...BookDetails
+    }
+  }
+
+  ${BOOK_DETAILS}
+`;
+
+export const ME = gql`
+  query {
+    me {
+      username
+      favoriteGenre
     }
   }
 `;
 
+// Mutations
 export const CREATE_BOOK = gql`
   mutation createBook(
     $title: String!
@@ -38,25 +66,21 @@ export const CREATE_BOOK = gql`
       author: $author
       genres: $genres
     ) {
-      title
-      published
-      author {
-        name
-      }
-      genres
-      id
+      ...BookDetails
     }
   }
+
+  ${BOOK_DETAILS}
 `;
 
 export const EDIT_AUTHOR = gql`
   mutation setBirthYear($name: String!, $setBornTo: Int!) {
     editAuthor(name: $name, setBornTo: $setBornTo) {
-      name
-      born
-      id
+      ...AuthorDetails
     }
   }
+
+  ${AUTHOR_DETAILS}
 `;
 
 export const LOGIN = gql`
@@ -67,25 +91,13 @@ export const LOGIN = gql`
   }
 `;
 
-export const GET_RECOMMENDED = gql`
-  query recommendedBooks($genre: String!) {
-    allBooks(genre: $genre) {
-      title
-      published
-      author {
-        name
-      }
-      genres
-      id
+// Subscriptions
+export const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      ...BookDetails
     }
   }
-`;
 
-export const ME = gql`
-  query {
-    me {
-      username
-      favoriteGenre
-    }
-  }
+  ${BOOK_DETAILS}
 `;

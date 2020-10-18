@@ -5,7 +5,7 @@ const Notification = ({ errorMessage }) => {
     return null;
   }
   return (
-    <div style={{ color: "red", padding: "20px", border: "1px solid red" }}>
+    <div style={{ padding: "20px", border: "1px solid #222" }}>
       {errorMessage}
     </div>
   );
