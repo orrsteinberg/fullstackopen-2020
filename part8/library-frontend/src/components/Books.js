@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Select from "react-select";
 import { useQuery } from "@apollo/client";
 import { ALL_BOOKS } from "../queries";
+import Select from "react-select";
 
 const Books = (props) => {
   const [filterByGenre, setFilterByGenre] = useState("all");
@@ -17,14 +17,18 @@ const Books = (props) => {
 
   const books = result.data.allBooks;
 
-  // Generate list of genres without duplicates
-  let genres = { all: true };
-  books.forEach((book) => {
-    book.genres.forEach((genre) => (genres[genre] = true));
-  });
-  genres = Object.keys(genres).map((genre) => {
-    return { value: genre, label: genre };
-  });
+  // Generate list of genres without duplicates, beginning with 'all'
+  const uniqueListOfGenres = ["all"].concat(
+    Array.from(
+      new Set(
+        books.reduce((arr, book) => {
+          return arr.concat(book.genres);
+        }, [])
+      )
+    )
+  );
+  // Create an array of genre object for the select filter component
+  const genreOptions = uniqueListOfGenres.map((g) => ({ value: g, label: g }));
 
   // Apply filter
   const booksToShow =
@@ -39,7 +43,7 @@ const Books = (props) => {
       <h4>filter by genre:</h4>
       <Select
         value={filterByGenre}
-        options={genres}
+        options={genreOptions}
         onChange={(selectedOption) => {
           setFilterByGenre(selectedOption.value);
         }}
