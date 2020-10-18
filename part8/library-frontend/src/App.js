@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useApolloClient } from "@apollo/client";
+
+import Notification from "./components/Notification";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
@@ -21,7 +23,12 @@ const App = () => {
 
   const notify = (message) => {
     setErrorMessage(message);
-    setTimeout(() => {
+
+    if (window.notificationTimeout) {
+      window.clearTimeout(window.notificationTimeout);
+    }
+
+    window.notificationTimeout = setTimeout(() => {
       setErrorMessage(null);
     }, 5000);
   };
@@ -35,7 +42,7 @@ const App = () => {
 
   return (
     <div>
-      <Notify errorMessage={errorMessage} />
+      <Notification errorMessage={errorMessage} />
 
       <div>
         <button onClick={() => setPage("authors")}>authors</button>
@@ -66,17 +73,6 @@ const App = () => {
         redirect={setPage}
         isLoggedIn={token}
       />
-    </div>
-  );
-};
-
-const Notify = ({ errorMessage }) => {
-  if (!errorMessage) {
-    return null;
-  }
-  return (
-    <div style={{ color: "red", padding: "20px", border: "1px solid red" }}>
-      {errorMessage}
     </div>
   );
 };
