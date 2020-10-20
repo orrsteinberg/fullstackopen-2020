@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { CREATE_BOOK, ALL_AUTHORS } from "../queries";
 
-const NewBook = ({ show, setError, updateCacheWith }) => {
+const NewBook = ({ show, setError, updateCacheWith, redirect }) => {
   const [title, setTitle] = useState("");
   const [author, setAuhtor] = useState("");
   const [published, setPublished] = useState("");
@@ -16,6 +16,7 @@ const NewBook = ({ show, setError, updateCacheWith }) => {
     update: (store, response) => {
       updateCacheWith(response.data.addBook);
     },
+    onCompleted: () => redirect("books"),
   });
 
   const submit = (event) => {

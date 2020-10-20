@@ -87,7 +87,12 @@ const App = () => {
 
       <Books show={page === "books"} />
 
-      <NewBook show={page === "add"} setError={notify} />
+      <NewBook
+        show={page === "add"}
+        setError={notify}
+        updateCacheWith={updateCacheWith}
+        redirect={setPage}
+      />
 
       <Recommend show={page === "recommend"} />
 
