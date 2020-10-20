@@ -8,18 +8,25 @@ module.exports = {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      const books = await Book.find({}).populate("author");
-
       if (args.author && args.genre) {
-        const byAuthorAndGenre = (book) =>
-          book.author.name === args.author && book.genres.includes(args.genre);
-        return books.filter(byAuthorAndGenre);
+        const author = await Author.findOne({ name: args.author });
+        return await Book.find({
+          $and: [
+            { author: { $in: author.id } },
+            { genres: { $in: args.genre } },
+          ],
+        }).populate("author");
       } else if (args.author) {
-        return books.filter((b) => b.author.name === args.author);
+        const author = await Author.findOne({ name: args.author });
+        return await Book.find({ author: { $in: author.id } }).populate(
+          "author"
+        );
       } else if (args.genre) {
-        return books.filter((b) => b.genres.includes(args.genre));
+        return await Book.find({ genres: { $in: args.genre } }).populate(
+          "author"
+        );
       } else {
-        return books;
+        return await Book.find({}).populate("author");
       }
     },
     allAuthors: () => {
