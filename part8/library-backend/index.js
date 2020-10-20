@@ -1,6 +1,7 @@
-const { ApolloServer, } = require("apollo-server");
+const { ApolloServer } = require("apollo-server");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const User = require("./models/User");
 const typeDefs = require("./typeDefs");
 const resolvers = require("./resolvers");
 

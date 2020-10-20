@@ -2,7 +2,6 @@ const { UserInputError, PubSub } = require("apollo-server");
 const pubsub = new PubSub();
 const Book = require("./models/Book");
 const Author = require("./models/Author");
-const User = require("./models/User");
 
 module.exports = {
   Query: {
@@ -24,19 +23,14 @@ module.exports = {
       }
     },
     allAuthors: () => {
-      console.log("Author.find"); // DEBUGGING
-      return Author.find({});
+      return Author.find({}).populate("books");
     },
     me: (root, args, { currentUser }) => {
       return currentUser;
     },
   },
   Author: {
-    bookCount: async (root) => {
-      console.log("Book.find"); // DEBUGGING
-      const books = await Book.find({}).populate("author");
-      return books.filter((b) => b.author.name === root.name).length;
-    },
+    bookCount: (root) => root.books.length,
   },
   Mutation: {
     addBook: async (root, args, { currentUser }) => {
@@ -53,23 +47,24 @@ module.exports = {
         });
       }
 
-      // Check if author exists, if not then create a new one
-      let author = await Author.findOne({ name: args.author });
-      if (!author) {
-        try {
-          const newAuthor = new Author({ name: args.author });
-          author = await newAuthor.save();
-        } catch (error) {
-          throw new UserInputError(error.message, {
-            invalidArgs: args,
-          });
-        }
-      }
+      let book;
+      let author;
 
-      // Create new book
-      const newBook = new Book({ ...args, author });
       try {
-        await newBook.save();
+        // Check if author exists, if not then create a new one
+        author = await Author.findOne({ name: args.author });
+
+        if (!author) {
+          author = new Author({ name: args.author });
+        }
+
+        // Create and save new book
+        newBook = new Book({ ...args, author });
+        const savedBook = await newBook.save();
+
+        // Add book to author's list of books and save new/updated author
+        author.books = author.books.concat(savedBook._id);
+        await author.save();
       } catch (error) {
         throw new UserInputError(error.message, {
           invalidArgs: args,
@@ -141,4 +136,3 @@ module.exports = {
     },
   },
 };
-
