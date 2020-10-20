@@ -2,9 +2,9 @@
   "name": "library-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "library-backend.js",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon library-backend.js"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
