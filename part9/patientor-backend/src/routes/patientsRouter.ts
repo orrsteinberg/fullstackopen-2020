@@ -13,22 +13,23 @@ router.get("/:id", (req, res) => {
     const patient = patientsService.getPatient(req.params.id);
     res.json(patient);
   } catch (error) {
-    res.status(404).send({ error: error.message });
+    const message = (error as Error).message;
+    res.status(404).send({ error: message });
   }
 });
 
 router.post("/:id/entries", (req, res) => {
-  const patient = patientsService.getPatient(req.params.id);
-  if (!patient) {
-    throw new Error("Patient not found");
-  }
-
   try {
+    const patient = patientsService.getPatient(req.params.id);
+    if (!patient) {
+      throw new Error("Patient not found");
+    }
     const newEntry = toNewEntry(req.body);
     const updatedPatient = patientsService.addEntry(patient, newEntry);
     res.json(updatedPatient);
   } catch (error) {
-    res.status(404).send({ error: error.message });
+    const message = (error as Error).message;
+    res.status(404).send({ error: message });
   }
 });
 
@@ -38,7 +39,8 @@ router.post("/", (req, res) => {
     const newPatient = patientsService.addPatient(newPatientData);
     res.json(newPatient);
   } catch (error) {
-    res.status(404).send({ error: error.message });
+    const message = (error as Error).message;
+    res.status(404).send({ error: message });
   }
 });
 
