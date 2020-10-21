@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   NewPatient,
   Patient,
@@ -9,7 +12,7 @@ import {
   Diagnosis,
   Discharge,
   SickLeave,
-  HealthCheckRating,, Entry
+  HealthCheckRating,
 } from "./types";
 
 // Exports
@@ -38,36 +41,30 @@ export const toNewPatient = (object: any): NewPatient => {
 
 export const toNewEntry = (object: any): NewEntry => {
   // Set up base entry
-  const newBaseEntry = toNewBaseEntry(object); 
+  const newEntry = toNewBaseEntry(object) as NewEntry;
 
   // Get rest of the fields according to the appropriate entry type
-  switch (newBaseEntry.type) {
+  switch (newEntry.type) {
     case EntryType.Hospital:
-      // return {
-      //   ...newBaseEntry,
-      //   discharge: parseDischarge(object.discharge)
-      // };
+      newEntry.discharge = parseDischarge(object.discharge);
+      return newEntry;
 
     case EntryType.OccupationalHealthcare:
-      const newEntry = {
-        ...newBaseEntry,
-        employerName: parseString(object.employerName, "employer name");
-      };
+      newEntry.employerName = parseString(object.employerName, "employer name");
 
       if (object.sickLeave) {
         newEntry.sickLeave = parseSickLeave(object.sickLeave);
       }
-
       return newEntry;
 
     case EntryType.HealthCheck:
-      return {
-        ...newBaseEntry,
-        healthCheckRating: parseHealthCheckRating(object.healthCheckRating)
-      }
+      newEntry.healthCheckRating = parseHealthCheckRating(
+        object.healthCheckRating
+      );
+      return newEntry;
 
     default:
-      assertNever(newBaseEntry.type);
+      return assertNever(newEntry);
   }
 };
 
@@ -85,7 +82,7 @@ const toNewBaseEntry = (object: any): NewBaseEntry => {
   }
 
   return newBaseEntry;
-}
+};
 
 // Exhaustive type checking
 const assertNever = (value: never): never => {
@@ -101,7 +98,7 @@ const isString = (text: any): text is string => {
 
 const parseString = (text: any, field: string): string => {
   if (!text || !isString(text) || text.trim() === "") {
-    throw new Error(`Invalid or missing ${field}: ${text}`);
+    throw new Error(`Invalid or missing ${field}`);
   }
   return text.trim();
 };
@@ -113,21 +110,21 @@ const isGender = (gender: any): gender is Gender => {
 
 const parseDateOfBirth = (date: any): string => {
   if (!date || !isString(date) || !isDate(date)) {
-    throw new Error(`Invalid or missing date of birth: ${date}`);
+    throw new Error(`Invalid or missing date of birth`);
   }
   return date.trim();
 };
 
 const parseDate = (date: any): string => {
   if (!date || !isString(date) || !isDate(date)) {
-    throw new Error(`Invalid or missing date of entry: ${date}`);
+    throw new Error(`Invalid or missing date of entry:`);
   }
   return date.trim();
 };
 
 const parseGender = (gender: any): Gender => {
   if (!gender || !isString(gender) || !isGender(gender)) {
-    throw new Error(`Invalid or missing gender: ${gender}`);
+    throw new Error(`Invalid or missing gender`);
   }
   return gender;
 };
@@ -142,13 +139,21 @@ const isDate = (date: any): boolean => {
 };
 
 const isDischarge = (discharge: any): boolean => {
-  const { date, criteria } = discharge;
-  return date && criteria && isDate(date) && isString(criteria);
+  return (
+    discharge.date &&
+    discharge.criteria &&
+    isDate(discharge.date) &&
+    isString(discharge.criteria)
+  );
 };
 
 const isSickLeave = (sickLeave: any): boolean => {
-  const { startDate, endDate } = sickLeave;
-  return startDate && endDate && isDate(startDate) && isDate(endDate);
+  return (
+    sickLeave.startDate &&
+    sickLeave.endDate &&
+    isDate(sickLeave.startDate) &&
+    isDate(sickLeave.endDate)
+  );
 };
 
 const isHealthCheckRating = (healthCheckRating: any): boolean => {
@@ -156,15 +161,15 @@ const isHealthCheckRating = (healthCheckRating: any): boolean => {
 };
 
 const parseDiagnosisCodes = (codes: any): Array<Diagnosis["code"]> => {
-  if (!Array.isArray(codes) || codes.every((code) => isString(code))) {
+  if (!Array.isArray(codes) || !codes.every((code) => isString(code))) {
     throw new Error(`Invalid diagnosis codes`);
   }
-  return codes;
+  return codes as Array<Diagnosis["code"]>;
 };
 
 const parseEntryType = (type: any): EntryType => {
   if (!type || !isString(type) || !isEntryType(type)) {
-    throw new Error(`Invalid or missing entry type: ${type}`);
+    throw new Error(`Invalid or missing entry type`);
   }
 
   return type;
@@ -175,7 +180,7 @@ const parseDischarge = (discharge: any): Discharge => {
     throw new Error(`Invalid or missing discharge field`);
   }
 
-  return discharge;
+  return discharge as Discharge;
 };
 
 const parseSickLeave = (sickLeave: any): SickLeave => {
@@ -183,7 +188,7 @@ const parseSickLeave = (sickLeave: any): SickLeave => {
     throw new Error(`Invalid or missing sick leave field`);
   }
 
-  return sickLeave;
+  return sickLeave as SickLeave;
 };
 
 const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
@@ -191,5 +196,5 @@ const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
     throw new Error(`Invalid or missing healthcheck rating field`);
   }
 
-  return healthCheckRating;
+  return healthCheckRating as HealthCheckRating;
 };

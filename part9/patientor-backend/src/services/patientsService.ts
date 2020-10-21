@@ -1,9 +1,9 @@
 import { v4 as uuid } from "uuid";
 import patientsData from "../../data/patients";
-import { NewPatient, Patient, CensoredPatient, Entry } from "../types";
+import { NewPatient, Patient, CensoredPatient, NewEntry } from "../types";
 import { censorPatient } from "../utils";
 
-const patients: Patient[] = patientsData;
+let patients: Patient[] = patientsData;
 
 const getCensoredPatients = (): CensoredPatient[] => {
   return patients.map((patient) => censorPatient(patient));
@@ -25,16 +25,33 @@ const getPatients = (): Patient[] => {
 const getPatient = (id: string): Patient => {
   const patient = patients.find((p) => p.id === id);
 
-  if (patient) {
-    return patient;
+  if (!patient) {
+    throw new Error("Patient not found");
   }
 
-  throw new Error("Patient not found");
+  return patient;
+};
+
+const addEntry = (patient: Patient, newEntry: NewEntry): Patient => {
+  const entry = { ...newEntry, id: uuid() };
+  const updatedPatient = {
+    ...patient,
+    entries: patient.entries?.concat(entry),
+  };
+  patients = patients.map((p) => {
+    if (p.id === updatedPatient.id) {
+      return updatedPatient;
+    }
+    return p;
+  });
+
+  return updatedPatient;
 };
 
 export default {
   getPatients,
   getCensoredPatients,
-  addPatient,
   getPatient,
+  addPatient,
+  addEntry,
 };

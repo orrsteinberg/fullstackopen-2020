@@ -77,6 +77,9 @@ export type NewPatient = Omit<Patient, "id">;
 
 export type CensoredPatient = Omit<Patient, "ssn" | "entries">;
 
-export type NewEntry = Omit<Entry, "id">;
-
 export type NewBaseEntry = Omit<BaseEntry, "id">;
+
+export type NewEntry =
+  | Omit<HospitalEntry, "id">
+  | Omit<OccupationalHealthcareEntry, "id">
+  | Omit<HealthCheckEntry, "id">;
