@@ -17,7 +17,7 @@ export interface Patient {
   ssn: string;
   gender: Gender;
   occupation: string;
-  entries?: Entry[];
+  entries: Entry[];
 }
 
 interface BaseEntry {
@@ -38,7 +38,7 @@ export enum HealthCheckRating {
 
 export enum EntryType {
   Hospital = "Hospital",
-  OccupationalHealthcare = "OccupationalHealthcareEntry",
+  OccupationalHealthcare = "OccupationalHealthcare",
   HealthCheck = "HealthCheck",
 }
 
