@@ -25,11 +25,11 @@ export const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         patients: {
+          ...state.patients,
           ...action.payload.reduce(
             (memo, patient) => ({ ...memo, [patient.id]: patient }),
             {}
           ),
-          ...state.patients,
         },
       };
     case "ADD_PATIENT":
@@ -45,11 +45,11 @@ export const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         diagnoses: {
+          ...state.diagnoses,
           ...action.payload.reduce(
             (memo, diagnosis) => ({ ...memo, [diagnosis.code]: diagnosis }),
             {}
           ),
-          ...state.patients,
         },
       };
     default:
