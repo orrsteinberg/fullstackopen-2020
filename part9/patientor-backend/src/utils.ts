@@ -115,13 +115,6 @@ const parseDateOfBirth = (date: any): string => {
   return date.trim();
 };
 
-const parseDate = (date: any): string => {
-  if (!date || !isString(date) || !isDate(date)) {
-    throw new Error(`Invalid or missing date of entry:`);
-  }
-  return date.trim();
-};
-
 const parseGender = (gender: any): Gender => {
   if (!gender || !isString(gender) || !isGender(gender)) {
     throw new Error(`Invalid or missing gender`);
@@ -160,6 +153,13 @@ const isHealthCheckRating = (healthCheckRating: any): boolean => {
   return Object.values(HealthCheckRating).includes(healthCheckRating);
 };
 
+const parseDate = (date: any): string => {
+  if (!date || !isString(date) || !isDate(date)) {
+    throw new Error(`Invalid or missing date of entry`);
+  }
+  return date.trim();
+};
+
 const parseDiagnosisCodes = (codes: any): Array<Diagnosis["code"]> => {
   if (!Array.isArray(codes) || !codes.every((code) => isString(code))) {
     throw new Error(`Invalid diagnosis codes`);
@@ -192,7 +192,7 @@ const parseSickLeave = (sickLeave: any): SickLeave => {
 };
 
 const parseHealthCheckRating = (healthCheckRating: any): HealthCheckRating => {
-  if (!healthCheckRating || !isHealthCheckRating(healthCheckRating)) {
+  if (healthCheckRating === undefined || !isHealthCheckRating(healthCheckRating)) {
     throw new Error(`Invalid or missing healthcheck rating field`);
   }
 
