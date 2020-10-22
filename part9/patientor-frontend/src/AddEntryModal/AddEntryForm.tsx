@@ -3,13 +3,14 @@ import { Grid, Button } from "semantic-ui-react";
 import { Field, Formik, Form } from "formik";
 
 import { TextField, DiagnosisSelection, NumberField } from "./FormField";
-import { EntryType, Entry } from "../types";
+import { EntryType, Entry, HealthCheckEntry } from "../types";
 import { useStateValue } from "../state";
+import { isDate } from "../utils";
 
 export type EntryFormValues = Omit<Entry, "id">;
 
 interface Props {
-  onSubmit: (values: EntryFormValues) => void;
+  onSubmit: (values: Omit<HealthCheckEntry, "id">) => void; // for now...
   onCancel: () => void;
 }
 
@@ -19,14 +20,17 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
   return (
     <Formik
       initialValues={{
+        // for now...
         type: EntryType.HealthCheck,
         description: "",
         specialist: "",
         date: "",
+        healthCheckRating: 0,
       }}
       onSubmit={onSubmit}
       validate={(values) => {
         const requiredError = "Field is required";
+        const invalidError = "Invalid input";
         const errors: { [field: string]: string } = {};
         if (!values.type) {
           errors.type = requiredError;
@@ -40,6 +44,14 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
         if (!values.date) {
           errors.date = requiredError;
         }
+        // for now...
+        if (values.healthCheckRating === undefined) {
+          errors.healthCheckRating = requiredError;
+        }
+        if (!isDate(values.date)) {
+          errors.date = invalidError;
+        }
+
         return errors;
       }}
     >
@@ -65,7 +77,7 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
               component={TextField}
             />
             <Field
-              label="healthCheckRating"
+              label="Health Check Rating"
               name="healthCheckRating"
               component={NumberField}
               min={0}
