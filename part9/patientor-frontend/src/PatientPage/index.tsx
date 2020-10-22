@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { Container, Header, Icon } from "semantic-ui-react";
+import { Container, Header, Icon, Button } from "semantic-ui-react";
 
 import { useStateValue, updatePatient } from "../state";
 import { apiBaseUrl } from "../constants";
 import { Patient } from "../types";
 
+import { EntryFormValues } from "../AddEntryModal/AddEntryForm";
+import AddEntryModal from "../AddEntryModal";
 import EntryDetails from "./EntryDetails";
 
 const PatientPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [{ patients }, dispatch] = useStateValue();
   const [patient, setPatient] = useState<Patient | undefined>(patients[id]);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const genderIcon = {
@@ -47,6 +50,28 @@ const PatientPage: React.FC = () => {
     }
   }, [id, patient, dispatch]);
 
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(null);
+  };
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      const { data: updatedPatient } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        values
+      );
+      dispatch(updatePatient(updatedPatient));
+      closeModal();
+      setPatient(updatedPatient);
+    } catch (e) {
+      console.error(e.response.data);
+      setError(e.response.data.error);
+    }
+  };
+
   if (error) return <p>{error}</p>;
 
   if (!patient) return null;
@@ -67,6 +92,13 @@ const PatientPage: React.FC = () => {
         patient.entries.map((entry) => (
           <EntryDetails entry={entry} key={entry.id} />
         ))}
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        error={error}
+        onClose={closeModal}
+      />
+      <Button onClick={() => openModal()}>Add New entry</Button>
     </Container>
   );
 };
