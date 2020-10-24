@@ -31,9 +31,10 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
     <Formik
       initialValues={{
         type: EntryType.HealthCheck,
+        date: "",
         description: "",
         specialist: "",
-        date: "",
+        diagnosisCodes: [],
         healthCheckRating: HealthCheckRating.LowRisk,
         employerName: "",
         sickLeave: {
