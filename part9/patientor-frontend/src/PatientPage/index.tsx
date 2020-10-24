@@ -7,7 +7,7 @@ import { useStateValue, updatePatient } from "../state";
 import { apiBaseUrl } from "../constants";
 import { Patient } from "../types";
 
-import { EntryFormValues } from "../AddEntryModal/AddEntryForm";
+import { EntryFormValues } from "../types";
 import AddEntryModal from "../AddEntryModal";
 import EntryDetails from "./EntryDetails";
 

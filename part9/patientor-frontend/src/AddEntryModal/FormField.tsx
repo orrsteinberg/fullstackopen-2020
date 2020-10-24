@@ -114,7 +114,45 @@ export const DiagnosisSelection = ({
   );
 };
 
-export const EntrySpecificFields: React.FC<{ type: EntryType }> = ({
+export const EntryTypeSelection = ({
+  entryTypes,
+  setFieldValue,
+  setFieldTouched,
+}: {
+  entryTypes: EntryType[];
+  setFieldValue: FormikProps<{ type: EntryType }>["setFieldValue"];
+  setFieldTouched: FormikProps<{ type: EntryType }>["setFieldTouched"];
+}) => {
+  const field = "type";
+  const onChange = (
+    _event: React.SyntheticEvent<HTMLElement, Event>,
+    data: DropdownProps
+  ) => {
+    setFieldTouched(field, true);
+    setFieldValue(field, data.value);
+  };
+
+  const stateOptions = entryTypes.map((entryType) => ({
+    key: entryType,
+    text:
+      entryType === EntryType.HealthCheck
+        ? "Health Check"
+        : entryType === EntryType.OccupationalHealthcare
+        ? "Occupational Healthcare"
+        : "Hospital",
+    value: entryType,
+  }));
+
+  return (
+    <Form.Field>
+      <label>Entry Type</label>
+      <Dropdown fluid selection options={stateOptions} onChange={onChange} />
+      <ErrorMessage name={field} />
+    </Form.Field>
+  );
+};
+
+export const EntryTypeSpecificFields: React.FC<{ type: EntryType }> = ({
   type,
 }) => {
   switch (type) {
@@ -133,9 +171,9 @@ export const EntrySpecificFields: React.FC<{ type: EntryType }> = ({
       return (
         <>
           <Field
-            label="Specialist"
-            placeholder="Specialist"
-            name="specialist"
+            label="Employer's Name"
+            placeholder="Employer's Name"
+            name="employerName"
             component={TextField}
           />
           <Field

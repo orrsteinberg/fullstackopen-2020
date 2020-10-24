@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, Segment } from "semantic-ui-react";
-import AddEntryForm, { EntryFormValues } from "./AddEntryForm";
+import { EntryFormValues } from "../types";
+import AddEntryForm from "./AddEntryForm";
 
 interface Props {
   modalOpen: boolean;

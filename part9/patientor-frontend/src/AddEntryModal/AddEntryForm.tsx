@@ -4,20 +4,18 @@ import { Field, Formik, Form } from "formik";
 
 import {
   TextField,
-  SelectField,
   DiagnosisSelection,
-  EntryTypeOption,
-  EntrySpecificFields,
+  EntryTypeSelection,
+  EntryTypeSpecificFields,
 } from "./FormField";
 import { EntryType, EntryFormValues, HealthCheckRating } from "../types";
 import { useStateValue } from "../state";
 import { isDate } from "../utils";
 
-const entryTypeOptions: EntryTypeOption[] = [
-  { value: EntryType.HealthCheck, label: "Health Check" },
-  { value: EntryType.OccupationalHealthcare, label: "Occupational Healthcare" },
-  { value: EntryType.Hospital, label: "Hospital" },
-];
+//const entryTypeOptions: EntryTypeOption[] = [ { value: EntryType.HealthCheck, label: "Health Check" },
+//  { value: EntryType.OccupationalHealthcare, label: "Occupational Healthcare" },
+//  { value: EntryType.Hospital, label: "Hospital" },
+//];
 
 interface Props {
   onSubmit: (values: EntryFormValues) => void;
@@ -35,10 +33,10 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
         description: "",
         specialist: "",
         diagnosisCodes: [],
-        healthCheckRating: HealthCheckRating.LowRisk,
+        healthCheckRating: HealthCheckRating.Healthy,
         employerName: "",
         sickLeave: {
-          starteDate: "",
+          startDate: "",
           endDate: "",
         },
         discharge: {
@@ -67,7 +65,7 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
           errors.date = invalidError;
         }
         if (values.type === EntryType.HealthCheck) {
-          if (values.healthCheckRating === undefined) {
+          if (!values.healthCheckRating && values.healthCheckRating !== 0) {
             errors.healthCheckRating = requiredError;
           }
         }
@@ -89,14 +87,16 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
           }
         }
         if (values.type === EntryType.Hospital) {
-          if (!values.discharge.date) {
-            errors.discharge = requiredError;
-          }
-          if (!values.discharge.criteria) {
-            errors.discharge = requiredError;
-          }
-          if (!isDate(values.discharge.date)) {
-            errors.discharge = invalidError;
+          if (values.discharge) {
+            if (!values.discharge.date) {
+              errors.discharge = requiredError;
+            }
+            if (!values.discharge.criteria) {
+              errors.discharge = requiredError;
+            }
+            if (!isDate(values.discharge.date)) {
+              errors.discharge = invalidError;
+            }
           }
         }
 
@@ -106,7 +106,11 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
       {({ isValid, dirty, setFieldValue, setFieldTouched, values }) => {
         return (
           <Form className="form ui">
-            <SelectField label="Type" name="type" options={entryTypeOptions} />
+            <EntryTypeSelection
+              entryTypes={Object.values(EntryType)}
+              setFieldValue={setFieldValue}
+              setFieldTouched={setFieldTouched}
+            />
             <Field
               label="Description"
               placeholder="Description"
@@ -130,7 +134,7 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
               setFieldTouched={setFieldTouched}
               diagnoses={Object.values(diagnoses)}
             />
-            <EntrySpecificFields type={values.type} />
+            <EntryTypeSpecificFields type={values.type} />
             <Grid>
               <Grid.Column floated="left" width={5}>
                 <Button type="button" onClick={onCancel} color="red">
