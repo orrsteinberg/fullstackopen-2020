@@ -2,6 +2,7 @@ import React from "react";
 import { ErrorMessage, Field, FieldProps, FormikProps } from "formik";
 import { Dropdown, DropdownProps, Form } from "semantic-ui-react";
 import { EntryType, Diagnosis } from "../types";
+import { assertNever } from "../utils";
 
 export type EntryTypeOption = {
   value: EntryType;
@@ -111,4 +112,66 @@ export const DiagnosisSelection = ({
       <ErrorMessage name={field} />
     </Form.Field>
   );
+};
+
+export const EntrySpecificFields: React.FC<{ type: EntryType }> = ({
+  type,
+}) => {
+  switch (type) {
+    case EntryType.HealthCheck:
+      return (
+        <Field
+          label="Health Check Rating"
+          name="healthCheckRating"
+          component={NumberField}
+          min={0}
+          max={3}
+        />
+      );
+
+    case EntryType.OccupationalHealthcare:
+      return (
+        <>
+          <Field
+            label="Specialist"
+            placeholder="Specialist"
+            name="specialist"
+            component={TextField}
+          />
+          <Field
+            label="Sick leave start date"
+            placeholder="YYYY-MM-DD"
+            name="sickLeave.startDate"
+            component={TextField}
+          />
+          <Field
+            label="Sick leave end date"
+            placeholder="YYYY-MM-DD"
+            name="sickLeave.endDate"
+            component={TextField}
+          />
+        </>
+      );
+
+    case EntryType.Hospital:
+      return (
+        <>
+          <Field
+            label="Discharge date"
+            placeholder="YYYY-MM-DD"
+            name="discharge.date"
+            component={TextField}
+          />
+          <Field
+            label="Criteria for discharge"
+            placeholder="Criteria"
+            name="discharge.criteria"
+            component={TextField}
+          />
+        </>
+      );
+
+    default:
+      return assertNever(type);
+  }
 };
