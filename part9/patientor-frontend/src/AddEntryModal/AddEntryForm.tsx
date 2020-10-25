@@ -22,18 +22,6 @@ interface Props {
   onCancel: () => void;
 }
 
-//interface Errors {
-//  type: string;
-//  date: string;
-//  description: string;
-//  specialist: string;
-//  diagnosisCodes: string;
-//  healthCheckRating: string;
-//  employerName: string;
-//  sickLeave: SickLeave;
-//  discharge: Discharge;
-//}
-
 const initialFormValues: EntryFormValues = {
   type: EntryType.HealthCheck,
   date: "",
