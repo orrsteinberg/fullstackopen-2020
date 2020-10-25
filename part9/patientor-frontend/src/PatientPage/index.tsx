@@ -5,9 +5,8 @@ import { Container, Header, Icon, Button } from "semantic-ui-react";
 
 import { useStateValue, updatePatient } from "../state";
 import { apiBaseUrl } from "../constants";
-import { Patient } from "../types";
+import { Patient, NewEntry } from "../types";
 
-import { EntryFormValues } from "../types";
 import AddEntryModal from "../AddEntryModal";
 import EntryDetails from "./EntryDetails";
 
@@ -57,11 +56,11 @@ const PatientPage: React.FC = () => {
     setError(null);
   };
 
-  const submitNewEntry = async (values: EntryFormValues) => {
+  const submitNewEntry = async (newEntry: NewEntry) => {
     try {
       const { data: updatedPatient } = await axios.post<Patient>(
         `${apiBaseUrl}/patients/${id}/entries`,
-        values
+        newEntry
       );
       dispatch(updatePatient(updatedPatient));
       closeModal();

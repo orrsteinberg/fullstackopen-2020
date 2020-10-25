@@ -4,34 +4,6 @@ import { Dropdown, DropdownProps, Form } from "semantic-ui-react";
 import { EntryType, Diagnosis } from "../types";
 import { assertNever } from "../utils";
 
-export type EntryTypeOption = {
-  value: EntryType;
-  label: string;
-};
-
-type SelectFieldProps = {
-  name: string;
-  label: string;
-  options: EntryTypeOption[];
-};
-
-export const SelectField: React.FC<SelectFieldProps> = ({
-  name,
-  label,
-  options,
-}: SelectFieldProps) => (
-  <Form.Field>
-    <label>{label}</label>
-    <Field as="select" name={name} className="ui dropdown">
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label || option.value}
-        </option>
-      ))}
-    </Field>
-  </Form.Field>
-);
-
 interface TextProps extends FieldProps {
   label: string;
   placeholder: string;
@@ -45,6 +17,7 @@ export const TextField: React.FC<TextProps> = ({
   <Form.Field>
     <label>{label}</label>
     <Field placeholder={placeholder} {...field} />
+
     <div style={{ color: "red" }}>
       <ErrorMessage name={field.name} />
     </div>
@@ -146,7 +119,13 @@ export const EntryTypeSelection = ({
   return (
     <Form.Field>
       <label>Entry Type</label>
-      <Dropdown fluid selection options={stateOptions} onChange={onChange} />
+      <Dropdown
+        fluid
+        selection
+        options={stateOptions}
+        onChange={onChange}
+        defaultValue={EntryType.HealthCheck}
+      />
       <ErrorMessage name={field} />
     </Form.Field>
   );
@@ -179,13 +158,13 @@ export const EntryTypeSpecificFields: React.FC<{ type: EntryType }> = ({
           <Field
             label="Sick leave start date"
             placeholder="YYYY-MM-DD"
-            name="sickLeave.startDate"
+            name="sickLeaveStartDate"
             component={TextField}
           />
           <Field
             label="Sick leave end date"
             placeholder="YYYY-MM-DD"
-            name="sickLeave.endDate"
+            name="sickLeaveEndDate"
             component={TextField}
           />
         </>
@@ -197,13 +176,13 @@ export const EntryTypeSpecificFields: React.FC<{ type: EntryType }> = ({
           <Field
             label="Discharge date"
             placeholder="YYYY-MM-DD"
-            name="discharge.date"
+            name="dischargeDate"
             component={TextField}
           />
           <Field
             label="Criteria for discharge"
             placeholder="Criteria"
-            name="discharge.criteria"
+            name="dischargeCriteria"
             component={TextField}
           />
         </>

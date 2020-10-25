@@ -8,43 +8,53 @@ import {
   EntryTypeSelection,
   EntryTypeSpecificFields,
 } from "./FormField";
-import { EntryType, EntryFormValues, HealthCheckRating } from "../types";
+import {
+  EntryFormValues,
+  EntryType,
+  HealthCheckRating,
+  NewEntry,
+} from "../types";
 import { useStateValue } from "../state";
-import { isDate } from "../utils";
-
-//const entryTypeOptions: EntryTypeOption[] = [ { value: EntryType.HealthCheck, label: "Health Check" },
-//  { value: EntryType.OccupationalHealthcare, label: "Occupational Healthcare" },
-//  { value: EntryType.Hospital, label: "Hospital" },
-//];
+import { isValidDate, toNewEntry } from "../utils";
 
 interface Props {
-  onSubmit: (values: EntryFormValues) => void;
+  onSubmit: (values: NewEntry) => void;
   onCancel: () => void;
 }
+
+//interface Errors {
+//  type: string;
+//  date: string;
+//  description: string;
+//  specialist: string;
+//  diagnosisCodes: string;
+//  healthCheckRating: string;
+//  employerName: string;
+//  sickLeave: SickLeave;
+//  discharge: Discharge;
+//}
+
+const initialFormValues: EntryFormValues = {
+  type: EntryType.HealthCheck,
+  date: "",
+  description: "",
+  specialist: "",
+  diagnosisCodes: [],
+  healthCheckRating: HealthCheckRating.Healthy,
+  employerName: "",
+  sickLeaveStartDate: "",
+  sickLeaveEndDate: "",
+  dischargeDate: "",
+  dischargeCriteria: "",
+};
 
 const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
   const [{ diagnoses }] = useStateValue();
 
   return (
     <Formik
-      initialValues={{
-        type: EntryType.HealthCheck,
-        date: "",
-        description: "",
-        specialist: "",
-        diagnosisCodes: [],
-        healthCheckRating: HealthCheckRating.Healthy,
-        employerName: "",
-        sickLeave: {
-          startDate: "",
-          endDate: "",
-        },
-        discharge: {
-          date: "",
-          criteria: "",
-        },
-      }}
-      onSubmit={onSubmit}
+      initialValues={initialFormValues}
+      onSubmit={(values) => onSubmit(toNewEntry(values))}
       validate={(values) => {
         const requiredError = "Field is required";
         const invalidError = "Invalid input";
@@ -61,7 +71,7 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
         if (!values.date) {
           errors.date = requiredError;
         }
-        if (!isDate(values.date)) {
+        if (!isValidDate(values.date)) {
           errors.date = invalidError;
         }
         if (values.type === EntryType.HealthCheck) {
@@ -73,30 +83,25 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
           if (!values.employerName) {
             errors.employerName = requiredError;
           }
-          if (values.sickLeave) {
-            if (!values.sickLeave.startDate) {
-              errors.sickLeave = requiredError;
-            } else if (!isDate(values.sickLeave.startDate)) {
-              errors.sickLeave = invalidError;
-            }
-            if (!values.sickLeave.endDate) {
-              errors.sickLeave = requiredError;
-            } else if (!isDate(values.sickLeave.endDate)) {
-              errors.sickLeave = invalidError;
-            }
+          if (!values.sickLeaveStartDate) {
+            errors.sickLeaveStartDate = requiredError;
+          } else if (!isValidDate(values.sickLeaveStartDate)) {
+            errors.sickLeaveStartDate = invalidError;
+          }
+          if (!values.sickLeaveEndDate) {
+            errors.sickLeaveEndDate = requiredError;
+          } else if (!isValidDate(values.sickLeaveEndDate)) {
+            errors.sickLeaveEndDate = invalidError;
           }
         }
         if (values.type === EntryType.Hospital) {
-          if (values.discharge) {
-            if (!values.discharge.date) {
-              errors.discharge = requiredError;
-            }
-            if (!values.discharge.criteria) {
-              errors.discharge = requiredError;
-            }
-            if (!isDate(values.discharge.date)) {
-              errors.discharge = invalidError;
-            }
+          if (!values.dischargeDate) {
+            errors.dischargeDate = requiredError;
+          } else if (!isValidDate(values.dischargeDate)) {
+            errors.dischargeDate = invalidError;
+          }
+          if (!values.dischargeCriteria) {
+            errors.dischargeCriteria = requiredError;
           }
         }
 
