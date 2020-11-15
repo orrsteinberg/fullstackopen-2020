@@ -29,7 +29,7 @@ router.post("/:id/entries", (req, res) => {
     res.json(updatedPatient);
   } catch (error) {
     const message = (error as Error).message;
-    res.status(404).send({ error: message });
+    res.status(400).send({ error: message });
   }
 });
 
@@ -40,7 +40,7 @@ router.post("/", (req, res) => {
     res.json(newPatient);
   } catch (error) {
     const message = (error as Error).message;
-    res.status(404).send({ error: message });
+    res.status(400).send({ error: message });
   }
 });
 
