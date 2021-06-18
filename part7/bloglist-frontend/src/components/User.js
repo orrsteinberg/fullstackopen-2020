@@ -4,24 +4,28 @@ import { Link, Redirect, useRouteMatch } from 'react-router-dom'
 import { Container, Section, SectionTitle, List, ListItem } from '../globalStyles'
 
 const UserPage = () => {
-  const userIdMatch = useRouteMatch('/users/:id').params.id
+  const {
+    params: { id: userIdMatch },
+  } = useRouteMatch('/users/:id')
   const userToView = useSelector((state) => state.users.find((u) => u.id === userIdMatch))
 
   if (!userToView) {
     return <Redirect to="/users" />
   }
 
+  const { name, blogs } = userToView
+
   return (
     <Container whiteBg>
       <Section>
         <SectionTitle centered big>
-          {userToView.name}
+          {name}
         </SectionTitle>
         <SectionTitle>Added blogs:</SectionTitle>
         <List>
-          {userToView.blogs.map((blog) => (
-            <ListItem key={blog.id}>
-              <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+          {blogs.map(({ id, title }) => (
+            <ListItem key={id}>
+              <Link to={`/blogs/${id}`}>{title}</Link>
             </ListItem>
           ))}
         </List>

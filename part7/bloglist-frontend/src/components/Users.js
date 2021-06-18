@@ -19,12 +19,12 @@ const Users = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
+          {users.map(({ id, name, blogs }) => (
+            <tr key={id}>
               <td>
-                <Link to={`/users/${user.id}`}>{user.name}</Link>
+                <Link to={`/users/${id}`}>{name}</Link>
               </td>
-              <td>{user.blogs.length}</td>
+              <td>{blogs.length}</td>
             </tr>
           ))}
         </tbody>

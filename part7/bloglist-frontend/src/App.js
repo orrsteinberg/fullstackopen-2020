@@ -51,7 +51,7 @@ const App = () => {
 
   return (
     <>
-      <MainHeader currentUser={currentUser} handleLogout={handleLogout} />
+      <MainHeader currentUserName={currentUser.name} handleLogout={handleLogout} />
       <Notification />
       <Switch>
         <Route path="/blogs/:id">

@@ -29,7 +29,7 @@ export const createBlog = (blogObject) => {
 export const addLike = (blogObject) => {
   return async (dispatch) => {
     try {
-      const updatedBlog = await blogService.update(blogObject)
+      const updatedBlog = await blogService.update({ ...blogObject, likes: blogObject.likes + 1 })
       dispatch({ type: 'UPDATE_BLOG', data: updatedBlog })
       dispatch(setNotification(`Like added: ${updatedBlog.title}`, 'success'))
     } catch (error) {
@@ -64,16 +64,16 @@ export const deleteBlog = (id) => {
 
 const blogReducer = (state = [], action) => {
   switch (action.type) {
-  case 'INIT_BLOGS':
-    return action.data
-  case 'CREATE_BLOG':
-    return [...state, action.data]
-  case 'UPDATE_BLOG':
-    return state.map((b) => (b.id === action.data.id ? action.data : b))
-  case 'DELETE_BLOG':
-    return state.filter((b) => b.id !== action.data.id)
-  default:
-    return state
+    case 'INIT_BLOGS':
+      return action.data
+    case 'CREATE_BLOG':
+      return [...state, action.data]
+    case 'UPDATE_BLOG':
+      return state.map((b) => (b.id === action.data.id ? action.data : b))
+    case 'DELETE_BLOG':
+      return state.filter((b) => b.id !== action.data.id)
+    default:
+      return state
   }
 }
 

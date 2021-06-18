@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import { createBlog } from '../reducers/blogReducer'
-
 import { Container, PageHeader, PageTitle, List, ListItem } from '../globalStyles'
 import Togglable from './Togglable'
 import CreateBlogForm from './CreateBlogForm'
@@ -28,10 +27,10 @@ const Blogs = () => {
         <CreateBlogForm createBlog={handleCreateBlog} />
       </Togglable>
       <List>
-        {blogs.map((blog) => (
-          <ListItem key={blog.id}>
-            <Link to={`/blogs/${blog.id}/`}>
-              <b>{blog.title}</b> by {blog.author}
+        {blogs.map(({ id, title, author }) => (
+          <ListItem key={id}>
+            <Link to={`/blogs/${id}/`}>
+              <b>{title}</b> by {author}
             </Link>
           </ListItem>
         ))}

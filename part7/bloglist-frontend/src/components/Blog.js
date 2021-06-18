@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link, Redirect, useRouteMatch } from 'react-router-dom'
+
 import { useField } from '../hooks'
 import { Container, Section, SectionTitle, Button, Input } from '../globalStyles'
 import { deleteBlog, addLike, addComment } from '../reducers/blogReducer'
@@ -19,19 +20,19 @@ const StyledCommentList = styled.ul`
 `
 
 const CommentForm = ({ handleAddComment }) => {
-  const [comment, clearComment] = useField('text')
+  const [commentField, clearCommentField] = useField('text')
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    if (!comment.value || comment.value.trim() === '') return
+    if (!commentField.value || commentField.value.trim() === '') return
 
-    handleAddComment(comment.value)
-    clearComment()
+    handleAddComment(commentField.value)
+    clearCommentField()
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <Input {...comment} />
+      <Input {...commentField} />
       <Button primary type="submit">
         Add Comment
       </Button>
@@ -39,70 +40,73 @@ const CommentForm = ({ handleAddComment }) => {
   )
 }
 
-const Comments = ({ blog, handleAddComment }) => (
+const Comments = ({ comments, handleAddComment }) => (
   <>
     <h3>Comments:</h3>
     <CommentForm handleAddComment={handleAddComment} />
     <StyledCommentList>
-      {blog.comments &&
-        blog.comments.map((comment, idx) => <StyledComment key={idx}>{comment}</StyledComment>)}
+      {comments &&
+        comments.map((comment, idx) => <StyledComment key={idx}>{comment}</StyledComment>)}
     </StyledCommentList>
   </>
 )
 
 const Blog = () => {
-  const blogIdMatch = useRouteMatch('/blogs/:id').params.id
+  const {
+    params: { id: blogIdMatch },
+  } = useRouteMatch('/blogs/:id')
   const blog = useSelector((state) => state.blogs.find((b) => b.id === blogIdMatch))
   const currentUser = useSelector((state) => state.currentUser)
   const dispatch = useDispatch()
-
-  const handleDelete = () => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      dispatch(deleteBlog(blog.id))
-    }
-  }
-
-  const handleAddLike = () => {
-    dispatch(addLike({ ...blog, likes: blog.likes + 1 }))
-  }
-
-  const handleAddComment = (comment) => {
-    dispatch(addComment({ ...blog, comments: [...blog.comments, comment] }))
-  }
 
   if (!blog) {
     return <Redirect to="/" />
   }
 
-  const shouldDispayDelete = blog.user.username === currentUser.username
+  const { id, url, title, author, likes, user, comments } = blog
+
+  const handleDelete = () => {
+    if (window.confirm(`Remove blog ${title} by ${author}?`)) {
+      dispatch(deleteBlog(id))
+    }
+  }
+
+  const handleAddLike = () => {
+    dispatch(addLike(blog))
+  }
+
+  const handleAddComment = (comment) => {
+    dispatch(addComment({ ...blog, comments: [...comments, comment] }))
+  }
+  const shouldDispayDelete = user.username === currentUser.username
 
   return (
     <Container whiteBg>
       <Section>
         <SectionTitle>
-          {blog.title} by {blog.author}
+          {title} by {author}
         </SectionTitle>
-        <a href={blog.url} target="_blank" rel="noopener noreferrer">
-          {blog.url}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          {url}
         </a>
         <p className="likes">
-          {blog.likes} likes
+          {likes} likes
           <Button primary onClick={handleAddLike}>
             Add
           </Button>
         </p>
         <p>
-          Added by: <Link to={`/users/${blog.user.id}`}>{blog.user.name}</Link>
+          Added by: <Link to={`/users/${user.id}`}>{user.name}</Link>
         </p>
         {shouldDispayDelete && <Button onClick={handleDelete}>delete</Button>}
       </Section>
-      <Comments blog={blog} handleAddComment={handleAddComment} />
+      <Comments comments={comments} handleAddComment={handleAddComment} />
     </Container>
   )
 }
 
 Comments.propTypes = {
-  blog: PropTypes.object.isRequired,
+  comments: PropTypes.array.isRequired,
   handleAddComment: PropTypes.func.isRequired,
 }
 

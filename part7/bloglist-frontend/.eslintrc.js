@@ -3,7 +3,7 @@ module.exports = {
     browser: true,
     es6: true,
     'jest/globals': true,
-    'cypress/globals': true
+    'cypress/globals': true,
   },
   extends: ['eslint:recommended', 'plugin:react/recommended'],
   parserOptions: {
@@ -15,7 +15,7 @@ module.exports = {
   },
   plugins: ['react', 'jest', 'cypress'],
   rules: {
-    indent: ['error', 2],
+    indent: ['error', 2, { SwitchCase: 1 }],
     'linebreak-style': ['error', 'unix'],
     quotes: ['error', 'single'],
     semi: ['error', 'never'],
@@ -31,4 +31,4 @@ module.exports = {
       version: 'detect',
     },
   },
-};
+}

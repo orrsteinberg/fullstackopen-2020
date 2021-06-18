@@ -1,14 +1,20 @@
 import React, { useState, useImperativeHandle } from 'react'
+import styled, { css } from 'styled-components'
 import PropTypes from 'prop-types'
 import { Card, Button } from '../globalStyles'
 
-const Togglable = React.forwardRef((props, ref) => {
-  const [visible, setVisible] = useState(false)
+const StyledToggleableDiv = styled.div`
+  ${({ hide }) =>
+    hide &&
+    css`
+      display: none;
+    `}
+`
 
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const ShowWhenVisible = { display: visible ? '' : 'none' }
+const Togglable = React.forwardRef(({ buttonLabel, children }, ref) => {
+  const [isVisible, setIsVisible] = useState(false)
 
-  const toggleVisibility = () => setVisible(!visible)
+  const toggleVisibility = () => setIsVisible(!isVisible)
 
   useImperativeHandle(ref, () => {
     return {
@@ -18,21 +24,22 @@ const Togglable = React.forwardRef((props, ref) => {
 
   return (
     <Card>
-      <div style={hideWhenVisible}>
+      <StyledToggleableDiv hide={isVisible}>
         <Button primary onClick={toggleVisibility}>
-          {props.buttonLabel}
+          {buttonLabel}
         </Button>
-      </div>
-      <div style={ShowWhenVisible}>
-        {props.children}
+      </StyledToggleableDiv>
+      <StyledToggleableDiv hide={!isVisible}>
+        {children}
         <Button onClick={toggleVisibility}>Cancel</Button>
-      </div>
+      </StyledToggleableDiv>
     </Card>
   )
 })
 
 Togglable.propTypes = {
   buttonLabel: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
 }
 
 Togglable.displayName = 'Toggleable'

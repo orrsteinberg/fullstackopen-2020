@@ -6,13 +6,13 @@ import { Container, PageHeader, PageTitle, Card, Button, Input } from '../global
 import Notification from './Notification'
 
 const LoginForm = () => {
-  const [username] = useField('text')
-  const [password] = useField('password')
+  const [usernameField] = useField('text')
+  const [passwordField] = useField('password')
   const dispatch = useDispatch()
 
   const handleLogin = (event) => {
     event.preventDefault()
-    dispatch(loginUser({ username: username.value, password: password.value }))
+    dispatch(loginUser({ username: usernameField.value, password: passwordField.value }))
   }
 
   return (
@@ -20,14 +20,14 @@ const LoginForm = () => {
       <PageHeader>
         <PageTitle>Log In</PageTitle>
       </PageHeader>
-        <Notification />
+      <Notification />
       <Card>
         <form onSubmit={handleLogin}>
           <div>
-            Username: <Input {...username} />
+            Username: <Input {...usernameField} />
           </div>
           <div>
-            Password: <Input {...password} />
+            Password: <Input {...passwordField} />
           </div>
           <Button primary type="submit">
             Login

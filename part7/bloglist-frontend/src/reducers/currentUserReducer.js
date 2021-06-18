@@ -20,7 +20,6 @@ export const loginUser = ({ username, password }) => {
       // Set auth token and localStorage info
       blogService.setToken(user.token)
       window.localStorage.setItem('loggedInUser', JSON.stringify(user))
-
       dispatch(setCurrentUser(user))
     } catch (error) {
       dispatch(setNotification('Wrong username or password', 'error'))
@@ -41,12 +40,12 @@ export const clearCurrentUser = () => {
 
 const currentUserReducer = (state = null, action) => {
   switch (action.type) {
-  case 'SET_CURRENT_USER':
-    return action.data
-  case 'CLEAR_CURRENT_USER':
-    return null
-  default:
-    return state
+    case 'SET_CURRENT_USER':
+      return action.data
+    case 'CLEAR_CURRENT_USER':
+      return null
+    default:
+      return state
   }
 }
 

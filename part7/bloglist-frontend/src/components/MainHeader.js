@@ -33,20 +33,20 @@ const Logo = styled.h2`
   letter-spacing: -1px;
 `
 
-const MainHeader = ({ currentUser, handleLogout }) => (
+const MainHeader = ({ currentUserName, handleLogout }) => (
   <MainHeaderWrapper>
     <Logo>Blogslist App</Logo>
     <MainHeaderNav>
       <Link to="/blogs">Blogs</Link>
       <Link to="/users">Users</Link>
     </MainHeaderNav>
-    <div>{currentUser.name} logged in</div>
+    <div>{currentUserName} logged in</div>
     <Button onClick={handleLogout}>Log out</Button>
   </MainHeaderWrapper>
 )
 
 MainHeader.propTypes = {
-  currentUser: PropTypes.object.isRequired,
+  currentUserName: PropTypes.string.isRequired,
   handleLogout: PropTypes.func.isRequired,
 }
 

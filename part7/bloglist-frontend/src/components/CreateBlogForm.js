@@ -1,34 +1,41 @@
-import React from 'react'
-import { useField } from '../hooks'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
+import { useField } from '../hooks'
 import { Button, Input } from '../globalStyles'
 
 const CreateBlogForm = ({ createBlog }) => {
-  const [title] = useField('text')
-  const [author] = useField('text')
-  const [url] = useField('text')
+  const [titleField, clearTitleField] = useField('text')
+  const [authorField, clearAuthorField] = useField('text')
+  const [urlField, clearUrlField] = useField('text')
 
-  const handleSbmit = (event) => {
+  const clearAllFields = useCallback(() => {
+    clearTitleField()
+    clearAuthorField()
+    clearUrlField()
+  }, [])
+
+  const handleSubmit = (event) => {
     event.preventDefault()
     createBlog({
-      title: title.value,
-      author: author.value,
-      url: url.value,
+      title: titleField.value,
+      author: authorField.value,
+      url: urlField.value,
     })
+    clearAllFields()
   }
 
   return (
     <>
       <h2>Create new</h2>
-      <form id="create-blog-form" onSubmit={handleSbmit}>
+      <form id="create-blog-form" onSubmit={handleSubmit}>
         <div>
-          Title: <Input {...title} />
+          Title: <Input {...titleField} />
         </div>
         <div>
-          Author: <Input {...author} />
+          Author: <Input {...authorField} />
         </div>
         <div>
-          URL: <Input {...url} />
+          URL: <Input {...urlField} />
         </div>
         <Button primary type="submit">
           Create
