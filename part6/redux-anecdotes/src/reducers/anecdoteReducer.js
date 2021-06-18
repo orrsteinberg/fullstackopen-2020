@@ -33,16 +33,18 @@ export const createAnecdote = (content) => {
 
 // Reducer
 const reducer = (state = [], action) => {
-  switch (action.type) {
+  const { type, data } = action;
+
+  switch (type) {
     case "INIT_ANECDOTES":
-      return action.data;
+      return data;
 
     case "NEW_ANECDOTE":
-      return [...state, action.data];
+      return [...state, data];
 
     case "ADD_VOTE":
       return state.map((anecdote) =>
-        anecdote.id === action.data.id
+        anecdote.id === data.id
           ? { ...anecdote, votes: anecdote.votes + 1 }
           : anecdote
       );

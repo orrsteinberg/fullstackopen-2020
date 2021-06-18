@@ -4,9 +4,11 @@ export const updateFilter = (filterInput) => ({
 });
 
 const filterReducer = (state = "", action) => {
-  switch (action.type) {
+  const { type, data } = action;
+
+  switch (type) {
     case "UPDATE_FILTER":
-      return action.data;
+      return data;
     default:
       return state;
   }

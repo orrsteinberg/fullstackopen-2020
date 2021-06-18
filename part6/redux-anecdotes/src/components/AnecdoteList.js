@@ -4,23 +4,23 @@ import { addVote } from "../reducers/anecdoteReducer";
 import { setNotification } from "../reducers/notificationReducer";
 import Filter from "./Filter";
 
-const AnecdoteList = (props) => {
+const AnecdoteList = ({ anecdotes, addVote, setNotification }) => {
   const vote = (id) => {
-    props.addVote(id);
-    const content = props.anecdotes.find((a) => a.id === id).content;
+    addVote(id);
+    const content = anecdotes.find((a) => a.id === id).content;
     // Display message
-    props.setNotification(`You voted for: ${content}`, 5);
+    setNotification(`You voted for: ${content}`, 5);
   };
 
   return (
     <div>
       <Filter />
-      {props.anecdotes.map((anecdote) => (
-        <div key={anecdote.id}>
-          <div>{anecdote.content}</div>
+      {anecdotes.map(({ id, content, votes }) => (
+        <div key={id}>
+          <div>{content}</div>
           <div>
-            has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id)}>vote</button>
+            has {votes}
+            <button onClick={() => vote(id)}>vote</button>
           </div>
         </div>
       ))}

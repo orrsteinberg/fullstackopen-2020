@@ -9,7 +9,6 @@ const AnecdoteForm = (props) => {
 
     const content = event.target.anecdote.value;
     props.createAnecdote(content);
-
     // Display message
     props.setNotification(`Created new anecdote: ${content}`, 5);
   };

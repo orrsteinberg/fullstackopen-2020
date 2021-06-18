@@ -1,6 +1,6 @@
 export const setNotification = (message, duration) => {
-  if (window.notificationTimeout) {
-    window.clearTimeout(window.notificationTimeout);
+  if (window._anecdotesNotificationTimeout) {
+    window.clearTimeout(window._anecdotesNotificationTimeout);
   }
 
   return async (dispatch) => {
@@ -9,7 +9,7 @@ export const setNotification = (message, duration) => {
       data: message,
     });
 
-    window.notificationTimeout = setTimeout(
+    window._anecdotesNotificationTimeout = setTimeout(
       () =>
         dispatch({
           type: "CLEAR_NOTIFICATION",
@@ -20,9 +20,11 @@ export const setNotification = (message, duration) => {
 };
 
 const notificationReducer = (state = null, action) => {
-  switch (action.type) {
+  const { type, data } = action;
+
+  switch (type) {
     case "DISPLAY_NOTIFICATION":
-      return action.data;
+      return data;
     case "CLEAR_NOTIFICATION":
       return null;
     default:
